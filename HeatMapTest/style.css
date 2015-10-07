@@ -1,0 +1,29 @@
+
+
+.cal-heatmap-container {
+	/*border-style: solid;
+	border-width: 0px;
+	border-radius: 30px;*/
+}
+
+.cal-heatmap-container .domain-background {
+	/*fill: #75B4C9;*/
+}
+
+.y_2000.m_1 .domain-background {
+	/*fill: blue;*/
+}
+
+.cal-heatmap-container .subdomain-text  {
+	font-size: 10px;
+	fill: #000000;
+}
+
+.cal-heatmap-container .graph-label
+{
+	font-size: 12px;
+}
+
+#previous {
+	font-size: 20px;
+}

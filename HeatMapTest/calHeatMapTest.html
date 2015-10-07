@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<title>CalHeatMap Test</title>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="cal-heatmap.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<link rel="stylesheet" href="cal-heatmap.css" />
+	<link rel="stylesheet" href="style.css"/>
+</head>
+
+<body>
+	<div id="jumpTo-a"></div>
+	<div id="jumpTo-a-btn">Jump To Here</div>
+	<div id="previous">Previous</div>
+	<div id="next">Next</div>
+	<div id="example-getsvg-button"> Get SVG </div>
+	<div id="example-getsvg-textarea"></div>
+	<div id="rewind-btn">Rewind</div>
+	<div id="new-data">New Data</div>
+	<div id="onClick-placeholder"></div>
+
+	<script type="text/javascript">
+		var datas = {1420088400: 30};
+			//{946771200: 10}, asdfd
+			//{946782000: 20},
+
+		var newData = {1420088400: 10};
+
+		var cal = new CalHeatMap();
+
+		var nextday = new Date();
+		nextday.setDate((nextday.getDate() + 1));
+
+		cal.init({
+
+			itemName: "testing",
+
+			itemSelector: "#jumpTo-a",
+			domain: "month",
+			//domainLabelFormat: "%m-%Y",
+
+			subDomain: "day",
+			subDomainTextFormat: function(date ,value) {
+				return value;
+			},
+
+			data: "yeardata.json",
+			
+			displayLegend: true,
+
+			range: 4, animationDuration: 1500,
+			
+			cellSize: 20,
+			//cellPadding: 4,
+			cellRadius: 5,
+
+			//domainGutter: 5,
+			domainMargin: [10, 10, 10, 10],
+			domainDynamicDimension: false,
+
+
+			tooltip: true,
+
+			highlight: [new Date(2000, 4, 30)],
+
+			legendCellSize: 20,
+			legendVerticalPosition: "top",
+			legendHorizontalPosition: "center",
+			legendOrientation: "horizontal",
+			legendColors: ["#efefef", "steelblue"],
+			legendCellPadding: 5,
+			legendMargin: [50, 0, 0, 50],
+
+
+			start: new Date(2015, 0, 1),
+			minDate: new Date(2015, 0, 1),
+
+			label: {
+				position: "top",
+				align: "right",
+			},
+
+			onClick: function(date, nb) {
+				$("#onClick-placeholder").html("You just clicked <br/>on <b>" +
+					date + "</b> <br/>with <b>" +
+					(nb === null ? "unknown" : nb) + "</b> items"
+				);
+			},
+
+
+			nextSelector: "#next",
+			previousSelector: "#previous",
+
+
+		});
+
+		var date1 = new Date(2000, 09, 15);
+
+		twoDate = [date1, new Date(2000, 10, 30)];
+
+		cal.options.highlight.push(twoDate);
+
+		cal.highlight(twoDate);
+
+
+		$("#jumpTo-a-btn").on("click", function(event) {
+			cal.jumpTo(new Date(2015, 11));
+		});
+
+		$("#previous").on("click", function(event){
+			cal.previous();
+		});
+
+		d3.select("#example-getsvg-button").on("click", function() {
+			d3.event.preventDefault();
+			d3.select("#example-getsvg-textarea").text(cal.getSVG());
+		});
+
+		$("#rewind-btn").on("click", function(event) {
+			cal.rewind();
+			cal.removeLegend();
+		});
+
+		$("#new-data").on("click", function() {
+			cal.update(newData);
+		});
+
+
+		//cal = cal.destroy();
+
+		
+	</script>
+
+</body>
+
+</html>
