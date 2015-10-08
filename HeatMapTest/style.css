@@ -1,9 +1,12 @@
 
 
 .cal-heatmap-container {
-	/*border-style: solid;
-	border-width: 0px;
-	border-radius: 30px;*/
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 30px;
+	margin-right: auto;
+	margin-left: auto;
+
 }
 
 .cal-heatmap-container .domain-background {
@@ -26,4 +29,25 @@
 
 #previous {
 	font-size: 20px;
+	display: inline-block;
+	font-family: futura;
+}
+
+#next {
+	font-size: 20px;
+	display: inline-block;
+	font-family: futura;
+	float: right;
+}
+
+#jumpTo {
+	font-family: futura;
+	display: block;
+	margin-top: 50px;
+	text-align: center;
+}
+
+#rewind {
+	font-family: futura;
+	text-align: center;
 }

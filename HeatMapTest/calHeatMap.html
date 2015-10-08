@@ -13,33 +13,23 @@
 </head>
 
 <body>
-	<div id="jumpTo-a"></div>
-	<div id="jumpTo-a-btn">Jump To Here</div>
+
+	<div id="cal-heatmap"></div>
 	<div id="previous">Previous</div>
 	<div id="next">Next</div>
-	<div id="example-getsvg-button"> Get SVG </div>
-	<div id="example-getsvg-textarea"></div>
-	<div id="rewind-btn">Rewind</div>
-	<div id="new-data">New Data</div>
+	<div id="jumpTo">Jump To November 2015</div>
+	<div id="rewind">Go Back to Start</div>
 	<div id="onClick-placeholder"></div>
+	
 
 	<script type="text/javascript">
-		var datas = {1420088400: 30};
-			//{946771200: 10}, asdfd
-			//{946782000: 20},
-
-		var newData = {1420088400: 10};
-
 		var cal = new CalHeatMap();
-
-		var nextday = new Date();
-		nextday.setDate((nextday.getDate() + 1));
 
 		cal.init({
 
 			itemName: "files sent",
 
-			itemSelector: "#jumpTo-a",
+			//itemSelector: "#jumpTo-a",
 			domain: "month",
 			//domainLabelFormat: "%m-%Y",
 
@@ -49,14 +39,13 @@
 			},
 
 			data: "data.json",
-			
-			displayLegend: true,
 
-			range: 4, animationDuration: 1500,
+			range: 6,
+
+			animationDuration: 1500,
 			
 			cellSize: 20,
-			//cellPadding: 4,
-			cellRadius: 5,
+			cellRadius: 1,
 
 			//domainGutter: 5,
 			domainMargin: [10, 10, 10, 10],
@@ -67,7 +56,7 @@
 
 			highlight: [new Date(2000, 4, 30)],
 
-
+			displayLegend: true,
 			legend: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
 			legendCellSize: 20,
 			legendVerticalPosition: "top",
@@ -79,7 +68,6 @@
 
 
 			start: new Date(2015, 0, 1),
-			minDate: new Date(2015, 0, 1),
 
 			label: {
 				position: "top",
@@ -100,36 +88,17 @@
 
 		});
 
-		var date1 = new Date(2000, 09, 15);
-
-		twoDate = [date1, new Date(2000, 10, 30)];
-
-		cal.options.highlight.push(twoDate);
-
-		cal.highlight(twoDate);
-
-
-		$("#jumpTo-a-btn").on("click", function(event) {
-			cal.jumpTo(new Date(2015, 11));
+		$("#jumpTo").on("click", function(event) {
+			cal.jumpTo(new Date(2015, 10));
 		});
 
-		$("#previous").on("click", function(event){
-			cal.previous();
-		});
-
-		d3.select("#example-getsvg-button").on("click", function() {
-			d3.event.preventDefault();
-			d3.select("#example-getsvg-textarea").text(cal.getSVG());
-		});
-
-		$("#rewind-btn").on("click", function(event) {
+		$("#rewind").on("click", function(event) {
 			cal.rewind();
-			cal.removeLegend();
 		});
 
-		$("#new-data").on("click", function() {
+		/*$("#new-data").on("click", function() {
 			cal.update(newData);
-		});
+		});*/
 
 
 		//cal = cal.destroy();
