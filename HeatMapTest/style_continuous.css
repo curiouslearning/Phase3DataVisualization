@@ -1,0 +1,71 @@
+body {
+	background-color: #ad001d;
+}
+
+
+.cal-heatmap-container {
+	background-color: #f4decd;
+	border-radius: 5px;
+	margin-top: 100px;
+}
+
+.cal-heatmap-container .domain-background {
+	/*fill: #75B4C9;*/
+}
+
+.y_2000.m_1 .domain-background {
+	/*fill: blue;*/
+}
+
+.cal-heatmap-container .subdomain-text  {
+	font-size: 8px;
+	fill: #000000;
+}
+
+.cal-heatmap-container .domain-text {
+	font-size: 50px;
+}
+
+.cal-heatmap-container .graph-label
+{
+	font-size: 20px;
+	font-family: futura;
+}
+
+#previous {
+	font-size: 20px;
+	display: inline-block;
+	font-family: "Lucida Sans Unicode";
+}
+
+#next {
+	font-size: 20px;
+	display: inline-block;
+	font-family: "Lucida Sans Unicode";
+	float: right;
+}
+
+#onClick-placeholder {
+	text-align: center;
+	margin-top: 10px;
+	font-family: "Lucida Sans Unicode"
+}
+
+.tooltip{
+    display: inline;
+ 	position: relative;
+}
+
+.tooltip:hover:after{
+    background: #333;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    bottom: 26px;
+    color: #fff;
+    content: attr(title);
+    left: 20%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}

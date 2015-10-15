@@ -33,9 +33,9 @@
 
 			itemName: "file",
 
-			domain: "month",
+			domain: "week",
 
-			subDomain: "day",
+			subDomain: "hour",
 			subDomainTextFormat: function(date ,value) {
 				return value;
 			},
@@ -54,6 +54,8 @@
 
 
 			tooltip: true,
+
+			highlight: [new Date(2000, 4, 30)],
 
 			displayLegend: true,
 			legend: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],

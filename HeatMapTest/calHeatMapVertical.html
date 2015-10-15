@@ -3,7 +3,7 @@
 <html>
 
 <head>
-	<title>CalHeatMap</title>
+	<title>CalHeatMapVertical</title>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 	<script type="text/javascript" src="cal-heatmap.min.js"></script>
@@ -13,17 +13,18 @@
 
 	<link rel="stylesheet" href="cal-heatmap.css" />
 	<link rel="stylesheet" href="tooltipster.css"/>
-	<link rel="stylesheet" href="style.css"/>
+	<link rel="stylesheet" href="style_week.css"/>
 </head>
 
 
 <body>
 
-	<div id="cal-heatmap"></div>
+
 	<div class=button id="previous">Previous</div>
 	<div class=button id="next">Next</div>
-	<div class=button id="jumpTo">Jump To October</div>
-	<div class=button id="rewind">Go Back to Start</div>
+	<br><br>
+	<br><br>
+	<div id="cal-heatmap"></div>
 	<div id="onClick-placeholder"></div>
 
 	<script type="text/javascript">
@@ -33,37 +34,37 @@
 
 			itemName: "file",
 
-			domain: "month",
+			domain: "week",
 
-			subDomain: "day",
-			subDomainTextFormat: function(date ,value) {
-				return value;
-			},
+			subDomain: "x_day",
+			subDomainTextFormat: "%d",
+
+			verticalOrientation: true,
 
 			data: "data.json",
 
-			range: 7,
+			range: 28,
 
-			animationDuration: 1500,
+			animationDuration: 500,
 			
 			cellSize: 26,
-			cellRadius: 1,
+			cellRadius: 5,
 
-			domainMargin: [10, 5, 10, 5],
-			domainDynamicDimension: false,
-
+			domainLabelFormat: "%b %W",
+			domainMargin: [1, 1, 1, 1],
+			domainGutter: 1,
+			domainDynamicDimension: true,
 
 			tooltip: true,
 
-			displayLegend: true,
+			displayLegend: false,
 			legend: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
 			legendCellSize: 20,
-			legendVerticalPosition: "top",
-			legendHorizontalPosition: "center",
-			legendOrientation: "horizontal",
-			legendColors: ["#efefef", "steelblue"],
-			legendCellPadding: 5,
-			legendMargin: [10, 0, 0, 50],
+			legendVerticalPosition: "center",
+			legendHorizontalPosition: "right",
+			legendOrientation: "vertical",
+			legendColors: ["#d2de76", "#12481b"],
+			legendMargin: [15, 0, 0, 20],
 
 
 			start: new Date(2015, 0, 1),
@@ -73,35 +74,12 @@
 				align: "right",
 			},
 
-			onClick: function(date, nb) {
-				$("#onClick-placeholder").html("<b>" +
-					(nb === null ? "unknown" : nb)+ "</b> items on <b>" +
-					date + "</b>"
-				);
-			},
-
-
 			nextSelector: "#next",
 			previousSelector: "#previous",
 
 
+
 		});
-
-		$("#jumpTo").on("click", function(event) {
-			cal.jumpTo(new Date(2015, 09));
-		});
-
-		$("#rewind").on("click", function(event) {
-			cal.rewind();
-		});
-
-
-		/*$("#new-data").on("click", function() {
-			cal.update(newData);
-		});*/
-
-
-		//cal = cal.destroy();
 
 		
 	</script>

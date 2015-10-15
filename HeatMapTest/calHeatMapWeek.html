@@ -3,7 +3,7 @@
 <html>
 
 <head>
-	<title>CalHeatMap</title>
+	<title>CalHeatMapWeek</title>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 	<script type="text/javascript" src="cal-heatmap.min.js"></script>
@@ -13,7 +13,7 @@
 
 	<link rel="stylesheet" href="cal-heatmap.css" />
 	<link rel="stylesheet" href="tooltipster.css"/>
-	<link rel="stylesheet" href="style.css"/>
+	<link rel="stylesheet" href="style_week.css"/>
 </head>
 
 
@@ -33,37 +33,37 @@
 
 			itemName: "file",
 
-			domain: "month",
+			domain: "week",
 
 			subDomain: "day",
-			subDomainTextFormat: function(date ,value) {
-				return value;
-			},
+			subDomainTextFormat: "%d",
+
+			//verticalOrientation: true,
 
 			data: "data.json",
 
-			range: 7,
+			range: 28,
 
-			animationDuration: 1500,
+			animationDuration: 500,
 			
 			cellSize: 26,
-			cellRadius: 1,
+			cellRadius: 5,
 
-			domainMargin: [10, 5, 10, 5],
+			domainLabelFormat: "%b %W",
+			domainMargin: [5, 5, 5, 5],
+			domainGutter: 5,
 			domainDynamicDimension: false,
-
 
 			tooltip: true,
 
 			displayLegend: true,
 			legend: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
 			legendCellSize: 20,
-			legendVerticalPosition: "top",
-			legendHorizontalPosition: "center",
-			legendOrientation: "horizontal",
-			legendColors: ["#efefef", "steelblue"],
-			legendCellPadding: 5,
-			legendMargin: [10, 0, 0, 50],
+			legendVerticalPosition: "center",
+			legendHorizontalPosition: "right",
+			legendOrientation: "vertical",
+			legendColors: ["#d2de76", "#12481b"],
+			legendMargin: [15, 0, 0, 20],
 
 
 			start: new Date(2015, 0, 1),
