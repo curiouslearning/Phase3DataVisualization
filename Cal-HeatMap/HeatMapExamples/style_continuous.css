@@ -1,0 +1,59 @@
+body {
+	background-color: #ad001d;
+}
+
+#heatmap_continuous .cal-heatmap-container {
+	background-color: #f4decd;
+	border-radius: 5px;
+	margin-top: 50px;
+}
+
+
+#heatmap_continuous .cal-heatmap-container .subdomain-text  {
+	font-size: 8px;
+	fill: #000000;
+}
+
+#heatmap_continuous .cal-heatmap-container .graph-label
+{
+	font-size: 30px;
+	font-family: futura;
+}
+
+#heatmap_continuous #previous {
+	font-size: 20px;
+	display: inline-block;
+	font-family: "Lucida Sans Unicode";
+}
+
+##heatmap_continuous #next {
+	font-size: 20px;
+	display: inline-block;
+	font-family: "Lucida Sans Unicode";
+	float: right;
+}
+
+##heatmap_continuous #onClick-placeholder {
+	text-align: center;
+	margin-top: 10px;
+	font-family: "Lucida Sans Unicode"
+}
+
+##heatmap_continuous .tooltip{
+    display: inline;
+ 	position: relative;
+}
+
+##heatmap_continuous .tooltip:hover:after{
+    background: #333;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    bottom: 26px;
+    color: #fff;
+    content: attr(title);
+    left: 20%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}

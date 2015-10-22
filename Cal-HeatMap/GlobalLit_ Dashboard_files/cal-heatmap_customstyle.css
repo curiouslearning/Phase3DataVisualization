@@ -1,0 +1,126 @@
+
+.container-fluid{
+	padding-bottom: 35px;
+}
+
+.cal-heatmap-container .subdomain-text  {
+	font-size: 8px;
+	fill: #000000;
+}
+
+#heatmap_standard_background {
+	background-color: #3c8dbc;
+	margin-bottom: 20px;
+}
+
+#heatmap_continuous_background{
+	background-color: #ad001d;
+}
+
+#heatmap_continuous_header {
+  border-top-color: #ad001d;
+}
+
+#heatmap_standard .cal-heatmap-container {
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 25px;
+	background-color: white;
+	padding-bottom: 5px;
+	padding-left: 10px;
+}
+
+#heatmap_continuous .cal-heatmap-container {
+	background-color: #f4decd;
+	border-radius: 5px;
+	margin-top: 50px;
+	padding-left: 10px;
+}
+
+
+#heatmap_standard .cal-heatmap-container .graph-label
+{
+	font-size: 15px;
+	fill: #000000;
+}
+
+#heatmap_continuous .cal-heatmap-container .graph-label
+{
+	font-size: 15px;
+	fill: #000000;
+}
+
+.button {
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 5px;
+	background-color: white;
+	margin-top: 10px;
+	margin-right: 20px;
+	margin-left: 20px;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-left: 5px;
+	padding-bottom: 5px;
+	cursor: pointer;
+	/*font-family: futura;*/
+}
+
+#previous {
+	font-size: 20px;
+	display: inline-block;
+	float: left;
+}
+
+#next {
+	font-size: 20px;
+	display: inline-block;
+	float: right;
+}
+
+#jumpTo {
+	font-size: 12px;
+	/*font-family: futura;*/
+	display: block;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 50px;
+	width: 100px;
+}
+
+#rewind {
+	font-size: 12px;
+	/*font-family: futura;*/
+	text-align: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100px;
+}
+
+
+#onClick-placeholder {
+	margin-top: 10px;
+	font-size: 15px;
+	color: #000000;
+}
+
+/*.tooltip{
+    display: inline;
+ 	position: relative;
+}
+
+.tooltip:hover:after{
+    background: #333;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    bottom: 26px;
+    color: #fff;
+    content: attr(title);
+    left: 20%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+} */
