@@ -179,17 +179,26 @@ Curious Learning
 							<h2>
 					            <div id="heatmap_continuous"></div> 
                                 <div id="onClick-placeholder"></div>
-                              <input type="text" name="daterange" value="01/01/2015 - 01/31/2015" />
+                                <input type="text" name="daterange" value="" />
 
                                 <script type="text/javascript">
+                                var end;
+
                                 $(function() {
                                     $('input[name="daterange"]').daterangepicker({
-                                        singleDatePicker: false,
+                                        "startDate": Date.now(),
+                                        "endDate": "11/30/2015",
                                     });
-                                   
                                 });
 
-                                </script>
+                                var range = 0;
+                                $( "input" )
+                                      .change(function() {
+                                        range = $( this ).val();
+                                        console.log(range);
+                                      })
+                                      .change();
+                                      </script>
 
 							</h2>			
                 </div>

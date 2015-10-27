@@ -1,9 +1,5 @@
         // get data from php page
-        $.ajax({
-            method: "GET",
-            url: "getprocessedfilecount.php",
-            dataType: "json",
-        })
+        $.get("getprocessedfilecount.php", {startDate: Date.now(), endDate: "10-30-15"})
         .done(function( data ) {
             // array of values from json data to use when setting legend
             var inputValues = getInputValues(data);
