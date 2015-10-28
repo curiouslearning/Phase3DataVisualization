@@ -1,5 +1,5 @@
 <?php
-
+ob_start('ob_gzhandler');
 /**
  * Created by David Gibbs, Snaptech, for Curious Learning 10/14/2015
  */

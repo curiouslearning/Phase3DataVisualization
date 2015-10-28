@@ -1,16 +1,23 @@
+        //Globals
+        var animationDuration = 1000;
+
         // get data from php page
         $.get("getprocessedfilecount.php", {startDate: Date.now(), endDate: "10-30-15"})
-        .done(function( data ) {
+        .error(function()
+        {
+               //Alert user that the request couldn't be completed
+        })
+        .success(function( data ) {
             // array of values from json data to use when setting legend
             var inputValues = getInputValues(data);
 
             //////////////////////////////////////////////////
             /////////////***STANDARD HEATMAP***///////////////
             //////////////////////////////////////////////////
-            var cal = new CalHeatMap();
+            var standardHeatMap = new CalHeatMap();
 
             // draw heatmap
-            cal.init({
+            standardHeatMap.init({
                 itemSelector: "#heatmap_standard",
 
                 itemName: "file",
@@ -24,23 +31,24 @@
                 subDomain: "day",
                 //display number of itemNames instead of date inside subDomain
                 subDomainTextFormat: function(date ,value) {
-                    return value;
+                    //Reduce number of digits to save space inside cell
+                    return (value > 1000) ? (value/1000).toFixed(1) + "k" : value;
                 },
                 start: new Date(2015, 0, 1),
                 data: data, // json data from php file
-                range: 6, // how many domain instances are displayed
-                animationDuration: 1500,
+                range: 5, // how many domain instances are displayed
+                animationDuration: animationDuration,
                 cellSize: 24,
                 cellRadius: 1,
                 tooltip: true,
                 displayLegend: true,
                 legend: setLegend(inputValues), // customizes legend based on input values of itemNames
-                legendCellSize: 20,
+                legendCellSize: 17,
                 legendVerticalPosition: "bottom",
                 legendHorizontalPosition: "center",
                 legendOrientation: "horizontal",
                 legendColors: ["#efefef", "steelblue"],
-                legendCellPadding: 2,
+                legendCellPadding: 1.2,
                 legendMargin: [10, 0, 10, 50],
 
                 // defines buttons that move through cal 
@@ -52,10 +60,10 @@
             //////////////////////////////////////////////////
             /////////////***CONTINUOUS HEATMAP***/////////////
             //////////////////////////////////////////////////
-            var cal = new CalHeatMap();
+            var continuousCalHeatMap = new CalHeatMap();
 
             //draw heatmap
-            cal.init({
+                continuousCalHeatMap.init({
                 itemSelector: "#heatmap_continuous",
 
                 itemName: "file",
@@ -64,20 +72,20 @@
                 domainDynamicDimension: false, // all domains have same dimension (based on biggest)
                 label: { // domainLabel position
                     position: "top",
-                    align: "right",
+                    align: "right"
                 },
                 subDomain: "day",
-                subDomainTextFormat: "%d",
+                //subDomainTextFormat: "%d",
                 start: new Date(2015, 0, 1),
                 data: data, // json data from php file
                 range: 1, // how many domain instances are displayed
-                animationDuration: 1500,
-                cellSize: 16.8,
+                animationDuration: animationDuration,
+                cellSize: 12.8,
                 cellRadius: 1,
                 tooltip: true,
                 displayLegend: true,
                 legend: setLegend(inputValues), // customizes legend based on input values of itemNames
-                legendCellSize: 15,
+                legendCellSize: 12,
                 legendVerticalPosition: "bottom",
                 legendHorizontalPosition: "center",
                 legendOrientation: "horizontal",
@@ -89,7 +97,7 @@
                     $("#onClick-placeholder").html("<b>" +
                         (nb === null ? "unknown" : nb)+ "</b> files"
                     );
-                },
+                }
 
             });
 

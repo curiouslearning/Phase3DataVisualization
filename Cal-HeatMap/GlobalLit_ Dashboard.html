@@ -143,41 +143,38 @@ Curious Learning
     </ol>
 </section>
 
-
-
-
 <!-- Nothing above this line should be modified.  It's generated at runtime. -->
 
 <script src="./GlobalLit_ Dashboard_files/calHeatMapVisualizations.js"> </script>
 
 <section class="content">
     <div class="row">
-        <section class="col-lg-12">
+        <section class="col-lg-11">
             <div class="box box-primary">
                 <div class="box-header" style="cursor: move;">
                     <div class="box-title">
                         Standard Cal Heatmap
                     </div>
                 </div>
-                     <div id="heatmap_standard_background" class="box-body">
+                 <div id="heatmap_standard_background" class="box-body">
                     <div class="container-fluid">
-							<h2>
+                            <h2>
                                 <div id="heatmap_standard"></div>
                                 <div class=button id="previous">Previous</div>
-                                <div class=button id="next">Next</div>                                            
-							</h2>
-                </div>
-            </div>
-			<div id="heatmap_continuous_header" class="box box-primary">
-                <div id="heatmap_continuous_header" class="box-header" style="cursor: move;">
-                    <div class="box-title">
-                        Continuous Cal Heatmap
+                                <div class=button id="next">Next</div>
+                            </h2>
                     </div>
                 </div>
-                     <div id="heatmap_continuous_background" class="box-body">
-                    <div class="container-fluid">
-							<h2>
-					            <div id="heatmap_continuous"></div> 
+			    <div id="heatmap_continuous_header" class="box box-primary">
+                    <div id="heatmap_continuous_header_inner" class="box-header" style="cursor: move;">
+                        <div class="box-title">
+                            Continuous Cal Heatmap
+                        </div>
+                    </div>
+                    <div id="heatmap_continuous_background" class="box-body">
+                        <div class="container-fluid">
+                            <!--<h2>-->
+                                <div id="heatmap_continuous"></div>
                                 <div id="onClick-placeholder"></div>
                                 <input type="text" name="daterange" value="" />
 
@@ -200,7 +197,9 @@ Curious Learning
                                       .change();
                                       </script>
 
-							</h2>			
+                            <!--</h2>			-->
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
