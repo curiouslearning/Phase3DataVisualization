@@ -160,6 +160,9 @@ Curious Learning
                     <div class="container-fluid">
                             <h2>
                                 <div id="heatmap_standard"></div>
+                                <div id="years">
+
+                                </div>
                                 <div class=button id="previous">Previous</div>
                                 <div class=button id="next">Next</div>
                             </h2>
@@ -173,31 +176,12 @@ Curious Learning
                     </div>
                     <div id="heatmap_continuous_background" class="box-body">
                         <div class="container-fluid">
-                            <!--<h2>-->
+                            <h2>
                                 <div id="heatmap_continuous"></div>
                                 <div id="onClick-placeholder"></div>
-                                <input type="text" name="daterange" value="" />
-
-                                <script type="text/javascript">
-                                var end;
-
-                                $(function() {
-                                    $('input[name="daterange"]').daterangepicker({
-                                        "startDate": Date.now(),
-                                        "endDate": "11/30/2015",
-                                    });
-                                });
-
-                                var range = 0;
-                                $( "input" )
-                                      .change(function() {
-                                        range = $( this ).val();
-                                        console.log(range);
-                                      })
-                                      .change();
-                                      </script>
-
-                            <!--</h2>			-->
+                                <div class=button id="prev">Previous</div>
+                                <div class=button id="n">Next</div>
+                            </h2>		
                         </div>
                     </div>
                 </div>

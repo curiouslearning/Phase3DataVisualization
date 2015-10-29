@@ -1,6 +1,6 @@
 
 .container-fluid{
-	padding-bottom: 35px;
+	padding-bottom: 40px;
 }
 
 .cal-heatmap-container .subdomain-text  {
@@ -58,14 +58,13 @@
 	border-radius: 5px;
 	background-color: white;
 	margin-top: 10px;
-	margin-right: 20px;
-	margin-left: 20px;
+	margin-right: 28px;
+	margin-left: 28px;
 	padding-top: 5px;
 	padding-right: 5px;
 	padding-left: 5px;
 	padding-bottom: 5px;
 	cursor: pointer;
-	/*font-family: futura;*/
 }
 
 #previous {
@@ -80,9 +79,35 @@
 	float: right;
 }
 
+#n {
+	font-size: 20px;
+	display: inline-block;
+	float: right;
+}
+
+#prev {
+	font-size: 20px;
+	display: inline-block;
+	float: left;
+}
+
+.jumpButton{
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 5px;
+	background-color: white;
+	margin-top: 10px;
+	margin-right: 28px;
+	margin-left: 28px;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-left: 5px;
+	padding-bottom: 5px;
+	cursor: pointer;
+}
+
 #jumpTo {
 	font-size: 12px;
-	/*font-family: futura;*/
 	display: block;
 	text-align: center;
 	margin-left: auto;
@@ -93,7 +118,6 @@
 
 #rewind {
 	font-size: 12px;
-	/*font-family: futura;*/
 	text-align: center;
 	display: block;
 	margin-left: auto;
@@ -106,6 +130,7 @@
 	margin-top: 10px;
 	font-size: 15px;
 	color: #000000;
+	margin-left: 28px;
 }
 
 /*.tooltip{
