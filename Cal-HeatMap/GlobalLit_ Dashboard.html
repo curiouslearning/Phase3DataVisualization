@@ -19,7 +19,7 @@
         <!-- fullCalendar -->
         <link href="./GlobalLit_ Dashboard_files/fullcalendar.css" rel="stylesheet" type="text/css">
         <!-- Daterange picker -->
-        <link href="./GlobalLit_ Dashboard_files/daterangepicker-bs3.css" rel="stylesheet" type="text/css">
+        <!--<link href="./GlobalLit_ Dashboard_files/daterangepicker-bs3.css" rel="stylesheet" type="text/css">-->
         <!-- bootstrap wysihtml5 - text editor -->
         <link href="./GlobalLit_ Dashboard_files/bootstrap3-wysihtml5.min.css" rel="stylesheet" type="text/css">
         <!-- DATA TABLES -->
@@ -33,6 +33,13 @@
         <script type="text/javascript" src="./GlobalLit_ Dashboard_files/cal-heatmap.min.js"></script>
         <link rel="stylesheet" href="./GlobalLit_ Dashboard_files/cal-heatmap.css" />
         <link rel="stylesheet" href="./GlobalLit_ Dashboard_files/cal-heatmap_customstyle.css"/>
+        <!-- Moment -->
+        <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <!-- Daterange Picker -->
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+        <script src="./GlobalLit_ Dashboard_files/daterangepicker2.js"></script>
+
+
 
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -136,43 +143,63 @@ Curious Learning
     </ol>
 </section>
 
-
-
-
 <!-- Nothing above this line should be modified.  It's generated at runtime. -->
 
 <script src="./GlobalLit_ Dashboard_files/calHeatMapVisualizations.js"> </script>
 
 <section class="content">
     <div class="row">
-        <section class="col-lg-12">
+        <section class="col-lg-11">
             <div class="box box-primary">
                 <div class="box-header" style="cursor: move;">
                     <div class="box-title">
                         Standard Cal Heatmap
                     </div>
                 </div>
-                     <div id="heatmap_standard_background" class="box-body">
+                 <div id="heatmap_standard_background" class="box-body">
                     <div class="container-fluid">
-							<h2>
+                            <h2>
                                 <div id="heatmap_standard"></div>
                                 <div class=button id="previous">Previous</div>
-                                <div class=button id="next">Next</div>                                            
-							</h2>
-                </div>
-            </div>
-			<div id="heatmap_continuous_header" class="box box-primary">
-                <div id="heatmap_continuous_header" class="box-header" style="cursor: move;">
-                    <div class="box-title">
-                        Continuous Cal Heatmap
+                                <div class=button id="next">Next</div>
+                            </h2>
                     </div>
                 </div>
-                     <div id="heatmap_continuous_background" class="box-body">
-                    <div class="container-fluid">
-							<h2>
-					            <div id="heatmap_continuous"></div> 
+			    <div id="heatmap_continuous_header" class="box box-primary">
+                    <div id="heatmap_continuous_header_inner" class="box-header" style="cursor: move;">
+                        <div class="box-title">
+                            Continuous Cal Heatmap
+                        </div>
+                    </div>
+                    <div id="heatmap_continuous_background" class="box-body">
+                        <div class="container-fluid">
+                            <!--<h2>-->
+                                <div id="heatmap_continuous"></div>
                                 <div id="onClick-placeholder"></div>
-							</h2>			
+                                <input type="text" name="daterange" value="" />
+
+                                <script type="text/javascript">
+                                var end;
+
+                                $(function() {
+                                    $('input[name="daterange"]').daterangepicker({
+                                        "startDate": Date.now(),
+                                        "endDate": "11/30/2015",
+                                    });
+                                });
+
+                                var range = 0;
+                                $( "input" )
+                                      .change(function() {
+                                        range = $( this ).val();
+                                        console.log(range);
+                                      })
+                                      .change();
+                                      </script>
+
+                            <!--</h2>			-->
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -182,7 +209,7 @@ Curious Learning
 <!-- Nothing below this line should be modified.  It's generated at runtime.  However, if truly needed, it can be completely removed. -->
 
 <!-- jQuery 2.0.2 -->
-<script src="./GlobalLit_ Dashboard_files/jquery.min(1).js"></script>
+<!--<script src="./GlobalLit_ Dashboard_files/jquery.min(1).js"></script>-->
 <!-- jQuery UI 1.10.3 -->
 <script src="./GlobalLit_ Dashboard_files/jquery-ui-1.10.3.min.js" type="text/javascript"></script>
 <!-- Bootstrap -->
@@ -200,7 +227,7 @@ Curious Learning
 <!-- jQuery Knob Chart -->
 <script src="./GlobalLit_ Dashboard_files/jquery.knob.js" type="text/javascript"></script>
 <!-- daterangepicker -->
-<script src="./GlobalLit_ Dashboard_files/daterangepicker.js" type="text/javascript"></script>
+<!--<script src="./GlobalLit_ Dashboard_files/daterangepicker.js" type="text/javascript"></script>-->
 <!-- Bootstrap WYSIHTML5 -->
 <script src="./GlobalLit_ Dashboard_files/bootstrap3-wysihtml5.all.min.js" type="text/javascript"></script>
 <!-- iCheck -->
