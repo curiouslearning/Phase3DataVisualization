@@ -8,85 +8,31 @@
 
 require_once("transporter.php");
 require_once("jsonminify.php");
+require_once("vis_backend.config.php");
 
-$table_fields = [0 => 'id', 1 => 'device_id', 2 => 'number_of_probes', 3 => 'server_data_uploaded_in_kb', 4 => 'server_data_clean_in_kb',
-                 5 => 'file_data_uploaded_in_kb', 6 => 'file_data_clean_in_kb', 7 => 'number_of_files', 8 => 'start_date', 9 => 'end_date',
-                 10 => 'created_on', 11 => 'modified_on'];
+// TODO: get rid of after testing
+$_GET = ['deployment_id' => '20', 'num_probes' => '22', 'num_files' => '12', 'file_data_type' => 'clean', 'server_data_type' => 'clean',
+         'max_days_before_now' => '5', 'tablet_id' => '2'];
 
-$_POST = ['deployment_id' => '20', 'num_probes' => '22', 'num_files' => '12', 'file_data_type' => 'clean', 'server_data_type' => 'clean'];
-
-/*
- * 1) Work with a get request that can send you info globallit.org/heatmapdata?deploymentid=23&datatype=probes&daysofdata=120
- * - figure out how to parse that  DONE
- * 2) Connect with Database DONE
- * 3) Pull data from database ish
- * 4) Put the data into a json format DONE
- * 5) convert dates back into seconds since epoch (need to do this) DONE
- * 6) minimization DONE
- * 7) cache the data you get so that it is there http://php.net/manual/en/book.apc.php
- */
-/*
-Allow for date params to be passes in a GET request: starting date, ending date (Optional)
-maximum number of days to return (from the current date). (ex. 100 days will return 100 days of data back from this date) (Optional)
-The type of data to be returned: server data -clean/uploaded; file data clean/uploaded; number of files; and number of probes (Required)
-Allow for a deployment ID to be passed that will only return data for that particular deployment. (Required)
-Allow for a tablet ID to be passed that will only return data for that particular tablet (Optional)
-*/
+// TODO: put in config (not sure how since its an array
+define('TABLE_FIELDS_WITHOUT_DATA_TYPES',
+        serialize(['id', 'device_id', 'number_of_probes', 'number_of_files', 'start_date', 'end_date', 'created_on', 'modified_on']));
 
 
-// optional
-$starting_date = $_POST['starting_date'];
-$ending_date = $_POST['ending_date'];
-$max_days_before_now = $_POST['max_days_before_now'];
-$tablet_id = $_POST['tablet_id'];
+post_json_if_query_cached();
+$table_fields_to_select = get_table_fields_to_select();
+$field_str = make_table_field_str($table_fields_to_select);
+$query = form_query($field_str);
 
-// requried
-$server_data_type = $_POST['server_data_type']; // clean/uploaded
-$file_data_type = $_POST['file_data_type'];
-$num_files = $_POST['num_files'];
-$num_probes = $_POST['num_probes'];
-$deployment_id =$_POST['deployment_id'];
-
-$table_fields_to_select = $table_fields;
-
-// todo make clean a constant
-if ($server_data_type == 'clean') {
-    unset($table_fields_to_select[3]);
-} elseif ($server_data_type == 'uploaded') {
-    unset($table_fields_to_select[4]);
-}
-
-if ($file_data_type == 'clean') {
-    unset($table_fields_to_select[5]);
-} elseif ($file_data_type == 'uploaded') {
-    unset($table_fields_to_select[6]);
-}
-
-$fields_to_select_str = '';
-$length = count($table_fields_to_select);
-$i = 0;
-
-foreach ($table_fields_to_select as $field) {
-    $fields_to_select_str = $fields_to_select_str . $field;
-    if ($i < $length - 1) {
-        $fields_to_select_str = $fields_to_select_str . ', ';
-    }
-    $i += 1;
-}
-
-
-// if they have starting date add it
-
-// if they have ending date add it to query
-
-// if they have tablet id or max days b4 now add it
 
 
 $transporter = new Transporter();
 $dbh = $transporter->dbConnectPdo();
-
-$query = 'SELECT ' . $fields_to_select_str . ' FROM tablet_data WHERE number_of_files=' . $num_files .
-          ' AND number_of_probes=' . $num_probes . ' AND id=' . $deployment_id . ' ;';
+if ($dbh == null) {
+    // error connecting to database
+    echo 'error connecting to db';
+    die();
+}
 
 $statement = $dbh->prepare($query);
 $success = $statement->execute();
@@ -100,7 +46,7 @@ $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 $rows = array();
 
 if ($result == false) {
-    echo "problem2";
+    echo "didn't recieve any data";
     die();
 }
 
@@ -119,7 +65,96 @@ $result_json = json_encode($rows);
 $jsonMinify = new JSONMin($result_json);
 $result_json = $jsonMinify->getMin();
 
-var_dump($result_json);
+apc_add($get_request_json, $result_json);
+
+
+
+
+
+
+
+
+
+function make_table_field_str($table_field_array) {
+    $fields_to_select_str = '';
+    $length = count($table_field_array);
+    $i = 0;
+
+    foreach ($table_field_array as $field) {
+        $fields_to_select_str = $fields_to_select_str . $field;
+        if ($i < $length - 1) {
+            $fields_to_select_str = $fields_to_select_str . ', ';
+        }
+        $i += 1;
+    }
+    return $fields_to_select_str;
+}
+
+
+function get_table_fields_to_select() {
+    $server_data_type = $_GET['server_data_type'];
+    $file_data_type = $_GET['file_data_type'];
+
+    $fields_to_select = unserialize(TABLE_FIELDS_WITHOUT_DATA_TYPES);
+
+    if ($server_data_type == 'clean') {
+        array_push($fields_to_select, 'server_data_clean_in_kb');
+    } elseif ($server_data_type == 'uploaded') {
+        array_push($fields_to_select, 'server_data_uploaded_in_kb');
+    }
+
+    if ($file_data_type == 'clean') {
+        array_push($fields_to_select, 'file_data_clean_in_kb');
+    } elseif ($file_data_type == 'uploaded') {
+        array_push($fields_to_select, 'file_data_uploaded_in_kb');
+    }
+    return $fields_to_select;
+}
+
+
+function form_query($fields_to_select) {
+    $num_files = $_GET['num_files'];
+    $num_probes = $_GET['num_probes'];
+    $deployment_id =$_GET['deployment_id'];
+
+    $query = 'SELECT ' . $fields_to_select . ' FROM tablet_data WHERE number_of_files=' . $num_files .
+        ' AND number_of_probes=' . $num_probes . ' AND id=' . $deployment_id;
+
+    if (isset($_GET['starting_date'])) {
+        $query = $query . ' AND start_date=' . $_GET['starting_date'];
+    }
+
+    if (isset($_GET['ending_date'])) {
+        $query = $query . ' AND end_date=' . $_GET['ending_date'];
+    }
+
+    if (isset($_GET['tablet_id'])) {
+        $query = $query . ' AND device_id=' . $_GET['tablet_id'];
+    }
+
+    if (isset($_GET['max_days_before_now'])) {
+        $now = date('Y-m-d H:i:s');
+        $days_before_now = (int)$_GET['max_days_before_now'];
+        $date_days_before_now = time() - ($days_before_now * 24 * 60 * 60);
+        $datetime_days_before_now = date('Y-m-d H:i:s', $date_days_before_now);
+        $query = $query . ' AND created_on BETWEEN ' . '\'' . $datetime_days_before_now . '\'' . ' AND ' . '\'' . $now . '\'';
+    }
+
+    $query = $query . ';';
+    return $query;
+}
+
+
+function post_json_if_query_cached() {
+    // check if the $json version of the post is in the cache
+    $get_request_json = json_encode($_GET);
+    $data_json = apc_fetch($get_request_json);
+
+    if ($data_json == true) {
+        echo "its here";
+        //http_post_data(VIS_URL, $data_json);
+    }
+}
 
 
 function convert_to_ssepoch($str) {
@@ -129,5 +164,3 @@ function convert_to_ssepoch($str) {
         return strtotime($str);
     }
 }
-
-
