@@ -40,7 +40,7 @@ $jsonMinify = new JSONMin($result_json);
 $result_json = $jsonMinify->getMin();
 $get_request_json = json_encode($_GET);
 apc_add($get_request_json, $result_json);
-
+post_json($result_json);
 
 
 function make_table_field_str($table_field_array) {
