@@ -23,34 +23,9 @@ post_json_if_query_cached();
 $table_fields_to_select = get_table_fields_to_select();
 $field_str = make_table_field_str($table_fields_to_select);
 $query = form_query($field_str);
+$result = get_result($query);
 
-
-
-$transporter = new Transporter();
-$dbh = $transporter->dbConnectPdo();
-if ($dbh == null) {
-    // error connecting to database
-    echo 'error connecting to db';
-    die();
-}
-
-$statement = $dbh->prepare($query);
-$success = $statement->execute();
-
-if ($success == false) {
-    echo "problem";
-    die();
-}
-
-$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 $rows = array();
-
-if ($result == false) {
-    echo "didn't recieve any data";
-    die();
-}
-
-
 // convert dates to seconds since epoch
 foreach ($result as $row) {
     $row['start_date'] = convert_to_ssepoch($row['start_date']);
@@ -60,18 +35,11 @@ foreach ($result as $row) {
     $rows = array_merge($rows, $row);
 }
 
-
 $result_json = json_encode($rows);
 $jsonMinify = new JSONMin($result_json);
 $result_json = $jsonMinify->getMin();
-
+$get_request_json = json_encode($_GET);
 apc_add($get_request_json, $result_json);
-
-
-
-
-
-
 
 
 
@@ -145,6 +113,34 @@ function form_query($fields_to_select) {
 }
 
 
+function get_result($query) {
+    $transporter = new Transporter();
+    $dbh = $transporter->dbConnectPdo();
+    if ($dbh == null) {
+        // error connecting to database
+        echo 'error connecting to db';
+        return null;
+    }
+
+    $statement = $dbh->prepare($query);
+    $success = $statement->execute();
+
+    if ($success == false) {
+        echo "problem";
+        return null;
+    }
+
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($result == false) {
+        echo "didn't recieve any data";
+        return null;
+    }
+
+    return $result;
+}
+
+
 function post_json_if_query_cached() {
     // check if the $json version of the post is in the cache
     $get_request_json = json_encode($_GET);
@@ -152,8 +148,12 @@ function post_json_if_query_cached() {
 
     if ($data_json == true) {
         echo "its here";
-        //http_post_data(VIS_URL, $data_json);
+        post_json($data_json);
     }
+}
+
+function post_json($json) {
+    echo "what do it do here";
 }
 
 
