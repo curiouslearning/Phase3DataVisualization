@@ -6,10 +6,12 @@
 #heatmap_standard_background {
 	background-color: #3c8dbc;
 	margin-bottom: 20px;
+	overflow: auto;
 }
 
 #heatmap_continuous_background{
 	background-color: #ad001d;
+	overflow: auto;
 }
 
 #heatmap_continuous_header {
@@ -29,12 +31,9 @@
 #heatmap_continuous .cal-heatmap-container {
 	background-color: #f4decd;
 	border-radius: 5px;
-	margin-top: 50px;
 	padding-left: 10px;
 	margin: auto;
-
 }
-
 
 #heatmap_standard .cal-heatmap-container .graph-label
 {
@@ -135,14 +134,18 @@
 
 
 #days{
-	display: inline;
-	
-}
-
-.day{
+	display: inline-block;
 	font-size: 15px;
-	width: 10px;
-	display: inline;
+	width: 15px;
+	word-wrap: break-word;
+	position: absolute;
+	margin-top: 36px;
+	margin-left: 5px;
+	background-color: white;
+	text-align: center;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
 }
 
 #onClick-placeholder {

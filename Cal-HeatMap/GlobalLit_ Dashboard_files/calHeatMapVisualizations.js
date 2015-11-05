@@ -2,7 +2,7 @@
         var animationDuration = 1000;
 
         // get data from php page
-        $.get("getprocessedfilecount.php", {startDate: Date.now(), endDate: "10-30-15"})
+        $.get("getprocessedfilecount.php"/*, {startDate: Date.now(), endDate: "10-30-15"}*/)
         .error(function()
         {
                //Alert user that the request couldn't be completed
@@ -32,7 +32,7 @@
                 domainDynamicDimension: false, // all domains have same dimension (based on biggest)
                 label: { // domainLabel position
                     position: "top",
-                    align: "right",
+                    align: "center",
                 },
                 subDomain: "day",
                 //display number of itemNames instead of date inside subDomain
@@ -81,7 +81,6 @@
                     align: "right"
                 },
                 subDomain: "day",
-                //subDomainTextFormat: "%d",
                 start: new Date(2015, 0, 1),
                 data: data, // json data from php file
                 range: 1, // how many domain instances are displayed
