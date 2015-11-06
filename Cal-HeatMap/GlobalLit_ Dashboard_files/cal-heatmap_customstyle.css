@@ -20,7 +20,7 @@
 
 #heatmap_standard .cal-heatmap-container {
 	border-style: solid;
-	border-width: 2px;
+	border-width: 0px;
 	border-radius: 25px;
 	background-color: white;
 	padding-bottom: 5px;
@@ -29,10 +29,11 @@
 }
 
 #heatmap_continuous .cal-heatmap-container {
-	background-color: #f4decd;
+	/*background-color: #f4decd;*/
 	border-radius: 5px;
 	padding-left: 10px;
 	margin: auto;
+	background-color: #fff;
 }
 
 #heatmap_standard .cal-heatmap-container .graph-label
@@ -146,6 +147,7 @@
 	border-style: solid;
 	border-color: black;
 	border-width: 1px;
+	z-index: 2;
 }
 
 #onClick-placeholder {
@@ -155,21 +157,34 @@
 	margin-left: 28px;
 }
 
-/*.tooltip{
-    display: inline;
- 	position: relative;
+.ch-tooltip {
+	padding: 10px;
+	background: #222;
+	color: #bbb;
+	font-size: 12px;
+	line-height: 1.4;
+	width: 140px;
+	position: absolute;
+	z-index: 99999;
+	text-align: center;
+	border-radius: 2px;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+	display: none;
+	box-sizing: border-box;
 }
 
-.tooltip:hover:after{
-    background: #333;
-    background: rgba(0,0,0,.8);
-    border-radius: 5px;
-    bottom: 26px;
-    color: #fff;
-    content: attr(title);
-    left: 20%;
-    padding: 5px 15px;
-    position: absolute;
-    z-index: 98;
-    width: 220px;
-} */
+.ch-tooltip::after{
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+	content: "";
+	padding: 0;
+	display: block;
+	bottom: -6px; /*bottom: -6px for little pointer*/
+	left: 50%;
+	margin-left: -6px;
+    border-width: 6px 6px 0;
+    border-top-color: #222;
+}

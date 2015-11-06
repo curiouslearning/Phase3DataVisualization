@@ -87,7 +87,7 @@
                 animationDuration: animationDuration,
                 cellSize: 14,
                 cellRadius: 1,
-                tooltip: true,
+                tooltip: false,
                 displayLegend: true,
                 legend: setLegend(inputValues), // customizes legend based on input values of itemNames
                 legendCellSize: 12,
@@ -209,7 +209,12 @@
             // jumped to clicked month of current year
             $(".monthButton").on("click", function(event) {
                 standardHeatMap.jumpTo(new Date(yearCurrent, $(this).text() - 1), true);
-            });            
+            });
+
+            console.log($(".r1").parent().parent());
+            $(".r1").tipsy();
+
+
         });
 
        /*  // date range picker calendar
