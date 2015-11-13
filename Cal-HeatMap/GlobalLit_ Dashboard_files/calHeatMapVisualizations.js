@@ -1,11 +1,19 @@
-        //Globals
-        var animationDuration = 1000;
+    //Globals
+    var animationDuration = 1000;
+
+    for(var num = 0; num < 1; num++){
+
+        var idS = "#S" + num; // instance of standard heatmap
+        var idC = "#C" + num; // instance of continuous heatmap
+        var heatmapsS = [];
+        var heatmapsC = [];
+
 
         // get data from php page
-        $.get("getprocessedfilecount.php"/*, {startDate: Date.now(), endDate: "10-30-15"}*/)
+        $.get("getprocessedfilecount.php")
         .error(function()
         {
-               //Alert user that the request couldn't be completed
+               alert("The request could not be completed.")
         })
         .success(function( data ) {
             // array of values from json data to use when setting legend
@@ -14,17 +22,19 @@
             // keep track of which year is being viewed
             var yearCurrent = getFirstYear(data);
 
-            // generate year buttons for both heatmaps based on date range of data
-            yearButtons(getFirstYear(data), getLastYear(data));
+            // generate year buttons for both types of heatmap based on date range of data
+            yearButtons(idS, ".yearsStandard",  getFirstYear(data), getLastYear(data));
+            yearButtons(idC, ".yearsContinuous", getFirstYear(data), getLastYear(data));
 
             //////////////////////////////////////////////////
             /////////////***STANDARD HEATMAP***///////////////
             //////////////////////////////////////////////////
-            var standardHeatMap = new CalHeatMap();
+            heatmapsS[num] = new CalHeatMap();
+            console.log(heatmapsS[num]);
 
             // draw heatmap
-            standardHeatMap.init({
-                itemSelector: "#heatmap_standard",
+            heatmapsS[num].init({
+                itemSelector: idS,
 
                 itemName: "file",
                 domain: "month",
@@ -66,11 +76,11 @@
             //////////////////////////////////////////////////
             /////////////***CONTINUOUS HEATMAP***/////////////
             //////////////////////////////////////////////////
-            var continuousHeatMap = new CalHeatMap();
+            var continuous1 = new CalHeatMap();
 
             //draw heatmap
-                continuousHeatMap.init({
-                itemSelector: "#heatmap_continuous",
+            continuous1.init({
+                itemSelector: "#continuous1",
 
                 itemName: "file",
                 domain: "year",
@@ -114,7 +124,7 @@
         //////////////////***HELPER FUNCTIONS***//////////////////
         //////////////////////////////////////////////////////////
 
-        // gets values from json data
+            // gets values from json data
             function getInputValues(object){
                 var input = new Array;
 
@@ -175,12 +185,13 @@
             }
 
             // generate year buttons
-            function yearButtons(firstYear, lastYear){
-                for(var i = firstYear; i <= lastYear; i++){
+            function yearButtons(id, container, firstYear, lastYear){
+                for(var i = firstYear; i <= lastYear + 7; i++){
                     $('<div/>', {
                         class: "yearButton",
                         text: i,
-                    }).appendTo('.years');
+                        id: id,
+                    }).appendTo(container);
                 }
                 monthButtons();
             }
@@ -195,27 +206,67 @@
                 }
             }
 
+        
+   
+
+            /* //gives each heatmap unique id
+            function createMapId(num){
+                var newId;
+                if(type == "standard"){
+                    newId = "#s";
+                }
+                if(type == "continuous"){
+                    newId = "#s";
+                }
+                newId = newId + num;
+                return newId;
+            }*/
+
+            function parseId(id){
+                var toParse = id;
+                var type = id[1];
+                var number = id.substring(2);
+                //console.log(type);
+                //console.log(number);
+                //console.log("heatmap" + type + "[" + number + "]");
+                return "heatmap" + type + "[" + number + "]";
+            }
+
+            parseId(idS);
+
             // jump to clicked year
             $(".yearButton").on("click", function(event) {
-                if($(this).parent().parent().parent().attr("id") == "standard"){ // but this is not modular...
-                    standardHeatMap.jumpTo(new Date($(this).text(), 0), true);
+
+                var heatmapToJump = parseId($(this).attr("id"));
+                console.log(heatmapToJump);
+                heatmapsS[num].jumpTo(new Date($(this).text(), 0), true);
+               // heatmapToJump.jumpTo(new Date($(this).text(), 0), true); // doesn't work bc ___.jumpTo needs to be exactly same as name of cal
+
+              // console.log(heatmapsS[num]);
+              // heatmapsS[num] = heatmapToJump;
+              // console.log(heatmapsS[num]);
+              //  console.log($(this).attr("id"));
+                /*if($(this).parent().parent().parent().attr("id") == "standard"){ // but this is not modular...
+                    heatmapsS[num].jumpTo(new Date($(this).text(), 0), true);
+                   
                 }
                 else{
-                    continuousHeatMap.jumpTo(new Date($(this).text(), 0), true);
-                }
+                    continuous1.jumpTo(new Date($(this).text(), 0), true);
+                }*/
                 yearCurrent = $(this).text();
             });
 
             // jumped to clicked month of current year
             $(".monthButton").on("click", function(event) {
-                standardHeatMap.jumpTo(new Date(yearCurrent, $(this).text() - 1), true);
+                heatmapsS[num].jumpTo(new Date(yearCurrent, $(this).text() - 1), true);
             });
 
-            console.log($(".r1").parent().parent());
-            $(".r1").tipsy();
-
+            /*console.log($(".r1").parent().parent());
+            $(".r1").tipsy();*/
 
         });
+    };
+        
 
        /*  // date range picker calendar
         $(function() {
