@@ -3,22 +3,22 @@
 	fill: #000000;
 }
 
-#heatmap_standard_background {
+#standard_background {
 	background-color: #3c8dbc;
 	margin-bottom: 20px;
 	overflow: auto;
 }
 
-#heatmap_continuous_background{
+#continuous_background{
 	background-color: #ad001d;
 	overflow: auto;
 }
 
-#heatmap_continuous_header {
+#continuous_header {
   border-top-color: #ad001d;
 }
 
-#heatmap_standard .cal-heatmap-container {
+#S0 .cal-heatmap-container {
 	border-style: solid;
 	border-width: 0px;
 	border-radius: 25px;
@@ -28,7 +28,7 @@
 	margin: auto;
 }
 
-#heatmap_continuous .cal-heatmap-container {
+#continuous1 .cal-heatmap-container {
 	/*background-color: #f4decd;*/
 	border-radius: 5px;
 	padding-left: 10px;
@@ -36,13 +36,13 @@
 	background-color: #fff;
 }
 
-#heatmap_standard .cal-heatmap-container .graph-label
+#s0 .cal-heatmap-container .graph-label
 {
 	font-size: 15px;
 	fill: #000000;
 }
 
-#heatmap_continuous .cal-heatmap-container .graph-label
+#continuous1 .cal-heatmap-container .graph-label
 {
 	font-size: 15px;
 	fill: #000000;
@@ -108,7 +108,12 @@
 	display: inline;
 }
 
-.years{
+.yearsStandard{
+	display: table;
+	margin: 0 auto;
+}
+
+.yearsContinuous{
 	display: table;
 	margin: 0 auto;
 }
@@ -182,9 +187,13 @@
 	content: "";
 	padding: 0;
 	display: block;
-	bottom: -6px; /*bottom: -6px for little pointer*/
+	bottom: 0px; /*bottom: -6px for little pointer*/
 	left: 50%;
 	margin-left: -6px;
     border-width: 6px 6px 0;
     border-top-color: #222;
+}
+
+.content {
+	overflow: visible;
 }
