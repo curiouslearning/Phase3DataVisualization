@@ -97,7 +97,7 @@
                 animationDuration: animationDuration,
                 cellSize: 14,
                 cellRadius: 1,
-                tooltip: false,
+                tooltip: true,
                 displayLegend: true,
                 legend: setLegend(inputValues), // customizes legend based on input values of itemNames
                 legendCellSize: 12,
@@ -263,6 +263,9 @@
 
             /*console.log($(".r1").parent().parent());
             $(".r1").tipsy();*/
+
+
+
 
         });
     };

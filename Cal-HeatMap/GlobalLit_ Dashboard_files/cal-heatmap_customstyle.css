@@ -187,9 +187,13 @@
 	content: "";
 	padding: 0;
 	display: block;
-	bottom: -6px; /*bottom: -6px for little pointer*/
+	bottom: 0px; /*bottom: -6px for little pointer*/
 	left: 50%;
 	margin-left: -6px;
     border-width: 6px 6px 0;
     border-top-color: #222;
+}
+
+.content {
+	overflow: visible;
 }
