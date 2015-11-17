@@ -6,16 +6,17 @@
  * Time: 11:32 PM
  */
 
-require_once("transporter.php");
-require_once("jsonminify.php");
-require_once("vis_backend.config.php");
+include_once("transporter.php");
+include_once("jsonminify.php");
 
 // gzip output buffer
 ob_start('ob_gzhandler');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // TODO: get rid of after testing
-$_GET = ['deployment_id' => '20', 'num_probes' => '22', 'num_files' => '12', 'file_data_type' => 'clean', 'server_data_type' => 'clean',
-         'max_days_before_now' => '5', 'tablet_id' => '2'];
+//$_GET = ['deployment_id' => '20', 'num_probes' => '22', 'num_files' => '12', 'file_data_type' => 'clean', 'server_data_type' => 'clean',
+//         'max_days_before_now' => '5', 'tablet_id' => '2'];
 
 // TODO: put in config (not sure how since its an array
 define('TABLE_FIELDS_WITHOUT_DATA_TYPES',
@@ -28,9 +29,7 @@ define('SERVER_DATA_UPLOADED', 'server_data_uploaded_in_kb');
 define('DEFAULT_DATE_RANGE_IN_DAYS', '365');
 define('DEFAULT_DATE_RANGE_FIELD', 'created_on');
 define('JSON_DATE_KEY_FIELD', 'start_date');
-
-
-$_GET = ['server_data' => 'clean'];
+define('TEST_MODE', 'true');
 
 
 // set the default range to be the past one year.
@@ -42,20 +41,18 @@ $_GET = ['server_data' => 'clean'];
 // SET TIME LIMIT ON APC
 
 
-function main() {
-    /*
-    $posted = post_json_if_query_cached();
-    if ($posted == true) {
-        return;
+function main($get_req) {
+    if (TEST_MODE == 'true') {
+        $_GET = $get_req;
+    } else {
+        $posted = post_json_if_query_cached();
+        if ($posted == true) {
+            return;
+        }
     }
-    */
 
     $query = form_query();
-    echo '<pre>'.var_dump($query).'</pre>';
     $result = get_result($query);
-    echo '<pre>'.var_dump($result).'</pre>';
-
-
     $data = array();
     foreach ($result as $row) {
         $values = array_values($row);
@@ -63,27 +60,29 @@ function main() {
         // TODO: ssepoch is not going to be unique
         $data[$ssepoch] = (int)$values[0];
     }
-    echo '<pre>'.var_dump($data).'</pre>';
 
-    /*
+    if (TEST_MODE == 'true') {
+        return $data;
+    }
+
     $result_json = json_encode($data);
     $json_minify = new JSONMin($result_json);
     $result_json = $json_minify->getMin();
     $get_request_json = json_encode($_GET);
     apc_add($get_request_json, $result_json);
     post_json($result_json);
-    */
 }
 
 
+// TODO: check that inputs are set to boolean true
 function form_query() {
     $query = null;
     if (isset($_GET['all_data'])) {
         $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data;';
-    } elseif ($_GET['data_for_all_active_deployments']) {
+    } elseif (isset($_GET['data_for_all_active_deployments'])) {
         $query = get_query_for_active_deployments();
     } elseif (isset($_GET['deployment_id'])) {
-        $query = get_query_for_deployment_with_id($_GET['deployment_id']);
+        $query = get_query_for_tablets_under_deployment($_GET['deployment_id']);
     } else {
         $query = get_standard_query();
     }
@@ -92,7 +91,7 @@ function form_query() {
 
 
 function get_standard_query() {
-    $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data WHERE' .  get_date_range_query_str();
+    $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data WHERE ' .  get_date_range_query_str();
 
     // extra qualifying fields to add to query
     if (isset($_GET['starting_date'])) {
@@ -112,47 +111,12 @@ function get_standard_query() {
 }
 
 
-function get_tablet_ids_under_deployment($deployment_id) {
-    $id_list = array();
-    $deployment_query = 'SELECT id FROM tablet_information WHERE deployment_information_key=' . $deployment_id  . ';';
-    $tablet_ids = get_result($deployment_query);
-    if ($tablet_ids == null) {
-        return null;
-    }
-
-    foreach ($tablet_ids as $row) {
-        array_push($id_list, $row['id']);
-    }
-    return $id_list;
-}
-
-
-function get_query_for_deployment_with_id($deployment_id) {
-    $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data WHERE';
-    $ids = get_tablet_ids_under_deployment($deployment_id);
-    if ($ids == null) {
-        die('problem');
-    }
-    $id_list_str = make_list_str($ids);
-    $query = $query . 'device_id IN ' . $id_list_str . ';';
-    return $query;
-}
-
-
-function get_query_for_active_deployments() {
+function get_query_for_tablets_under_deployment($deployment_id) {
     $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data WHERE ';
+    $tablet_ids = get_tablet_ids_under_deployment($deployment_id);
 
-    $deployment_ids = get_active_deployment_ids();
-    if ($deployment_ids == null) {
+    if ($tablet_ids == null) {
         die('problem');
-    }
-
-    $tablet_ids = array();
-    foreach ($deployment_ids as $id) {
-        $ids_for_deployment = get_tablet_ids_under_deployment($id);
-        if ($ids_for_deployment != null) {
-            array_merge($tablet_ids, $ids_for_deployment);
-        }
     }
 
     $id_list_str = make_list_str($tablet_ids);
@@ -161,21 +125,72 @@ function get_query_for_active_deployments() {
 }
 
 
-function get_active_deployment_ids() {
-    $active_query = 'SELECT deployment_id FROM deployment_information WHERE is_active=1';
-    $deployment_ids = get_result($active_query);
-    if ($deployment_ids == null) {
+// TODO: TEST THIS FOR GETTING MULTIPLE ACTIVE DEPLOYMENTS
+function get_query_for_active_deployments() {
+    $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data WHERE ';
+
+    $active_deployment_ids = get_active_deployment_ids();
+    if ($active_deployment_ids == null) {
+        // there are no active deployments
         return null;
     }
-    foreach ($deployment_ids as $row) {
-        array_push($deployment_ids, $row['deployment_id']);
+
+    // collect ids of tablets at active deployments
+    $tablet_ids = array();
+    foreach ($active_deployment_ids as $deployment_id) {
+        $ids = get_tablet_ids_under_deployment($deployment_id);
+        if ($ids != null) {
+            $tablet_ids = array_merge($tablet_ids, $ids);
+        }
     }
-    return $deployment_ids;
+
+    if (count($tablet_ids) == 0) {
+        // there are no tablets at active deployments, nothing to query
+        return null;
+    }
+
+    $id_list_str = make_list_str($tablet_ids);
+    $query = $query . 'device_id IN ' . $id_list_str . ';';
+    return $query;
 }
 
 
+// TODO: check null cases
+function get_tablet_ids_under_deployment($deployment_id) {
+    $id_list = array();
+    $deployment_query = 'SELECT id FROM tablet_information WHERE deployment_information_key=' . $deployment_id  . ';';
+    $tablet_ids = get_result($deployment_query);
+
+    if ($tablet_ids == null) {
+        return null;
+    }
+
+    foreach ($tablet_ids as $row) {
+        array_push($id_list, $row['id']);
+    }
+
+    return $id_list;
+}
+
+
+// returns array of active deployment ids or null if there are no active deployments
+function get_active_deployment_ids() {
+    $active_ids = array();
+    $active_query = 'SELECT deployment_id FROM deployment_information WHERE is_active=1 AND deployment_id IS NOT NULL';
+    $result = get_result($active_query);
+    if ($result == null) {
+        return null;
+    }
+
+    foreach ($result as $row) {
+        array_push($active_ids, $row['deployment_id']);
+    }
+
+    return $active_ids;
+}
+
+// assumes that the input in not null
 function make_list_str($array) {
-    echo '<pre>'.var_dump($array).'</pre>';
     $list_str = '(';
     $length = count($array);
     $i = 0;
@@ -209,7 +224,7 @@ function get_date_range_query_str() {
 function get_table_fields_to_select() {
     $table_fields = '';
 
-    // TODO: should I check for some kind of value with numprobes, numfiles,.. etc
+    // TODO: I should check for some kind of value with numprobes, numfiles,.. etc
     if (isset($_GET['server_data']) And $_GET['server_data'] == 'clean') {
         $table_fields = SERVER_DATA_CLEAN;
     } elseif (isset($_GET['server_data']) And $_GET['server_data'] == 'uploaded') {
@@ -259,6 +274,7 @@ function get_result($query) {
 }
 
 
+// TODO: put a time limit of a day on the length this is cached
 function post_json_if_query_cached() {
     // check if the json version of the post is in the cache
     $get_request_json = json_encode($_GET);
@@ -286,5 +302,6 @@ function convert_to_ssepoch($str) {
     }
 }
 
-
-main();
+if (TEST_MODE != 'true') {
+    main(null);
+}
