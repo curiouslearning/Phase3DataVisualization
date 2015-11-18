@@ -14,36 +14,31 @@ ob_start('ob_gzhandler');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// TODO: get rid of after testing
-//$_GET = ['deployment_id' => '20', 'num_probes' => '22', 'num_files' => '12', 'file_data_type' => 'clean', 'server_data_type' => 'clean',
-//         'max_days_before_now' => '5', 'tablet_id' => '2'];
 
-// TODO: put in config (not sure how since its an array
-define('TABLE_FIELDS_WITHOUT_DATA_TYPES',
-        serialize(['id', 'device_id', 'number_of_probes', 'number_of_files', 'start_date', 'end_date', 'created_on', 'modified_on']));
+// tablet data fields that can be requested
+define('FILE_DATA_CLEAN_FIELD', 'file_data_clean_in_kb');
+define('FILE_DATA_UPLOADED_FIELD', 'file_data_uploaded_in_kb');
+define('SERVER_DATA_CLEAN_FIELD', 'server_data_clean_in_kb');
+define('SERVER_DATA_UPLOADED_FIELD', 'server_data_uploaded_in_kb');
+define('NUMBER_OF_PROBES_FIELD', 'number_of_probes');
+define('NUMBER_OF_FILES_FIELD', 'number_of_files');
 
-define('FILE_DATA_CLEAN', 'file_data_clean_in_kb');
-define('FILE_DATA_UPLOADED', 'file_data_uploaded_in_kb');
-define('SERVER_DATA_CLEAN', 'server_data_clean_in_kb');
-define('SERVER_DATA_UPLOADED', 'server_data_uploaded_in_kb');
+// special requests
+define('ALL_DATA_PARAM', 'all_data');
+define('ACTIVE_DEPLOYMENTS_PARAM', 'all_active_deployments');
+define('DATA_UNDER_DEPLOYMENT_PARAM', 'deployment_id');
+
+// how many days of data to return if no range is given
 define('DEFAULT_DATE_RANGE_IN_DAYS', '365');
 define('DEFAULT_DATE_RANGE_FIELD', 'created_on');
 define('JSON_DATE_KEY_FIELD', 'start_date');
+
 define('TEST_MODE', 'true');
 
 
-// set the default range to be the past one year.
-// BIT flag for all of the data = ALL DATA = ALL years of data.... not present assume that it is false
-// option where user could set a bit flag where user can get tables from active deployement
-// look up in other table get deoplyment grab all tablets under that deployement
-// 1430974800: start state .... number of files
-// they will just be requesting one thing ... fix that
-// SET TIME LIMIT ON APC
-
-
-function main($get_req) {
+function main($test_request) {
     if (TEST_MODE == 'true') {
-        $_GET = $get_req;
+        $_GET = $test_request;
     } else {
         $posted = post_json_if_query_cached();
         if ($posted == true) {
@@ -52,12 +47,20 @@ function main($get_req) {
     }
 
     $query = form_query();
+    if ($query == null) {
+        die('could not form query from request');
+    }
+
     $result = get_result($query);
+    if ($result == null) {
+        die('query returned no data');
+    }
+
+    // TODO: ssepoch is not going to be unique
     $data = array();
     foreach ($result as $row) {
         $values = array_values($row);
         $ssepoch = convert_to_ssepoch($values[1]);
-        // TODO: ssepoch is not going to be unique
         $data[$ssepoch] = (int)$values[0];
     }
 
@@ -69,20 +72,20 @@ function main($get_req) {
     $json_minify = new JSONMin($result_json);
     $result_json = $json_minify->getMin();
     $get_request_json = json_encode($_GET);
-    apc_add($get_request_json, $result_json);
+    $time_to_live = strtotime('tomorrow 00:00:00') - time(); // until midnight
+    apc_add($get_request_json, $result_json, $time_to_live);
     post_json($result_json);
 }
 
 
-// TODO: check that inputs are set to boolean true
 function form_query() {
     $query = null;
-    if (isset($_GET['all_data'])) {
+    if (isset($_GET[ALL_DATA_PARAM]) And $_GET[ALL_DATA_PARAM] == true) {
         $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data;';
-    } elseif (isset($_GET['data_for_all_active_deployments'])) {
+    } elseif (isset($_GET[ACTIVE_DEPLOYMENTS_PARAM]) And $_GET[ACTIVE_DEPLOYMENTS_PARAM] == true) {
         $query = get_query_for_active_deployments();
-    } elseif (isset($_GET['deployment_id'])) {
-        $query = get_query_for_tablets_under_deployment($_GET['deployment_id']);
+    } elseif (isset($_GET[DATA_UNDER_DEPLOYMENT_PARAM])) {
+        $query = get_query_for_tablets_under_deployment($_GET[DATA_UNDER_DEPLOYMENT_PARAM]);
     } else {
         $query = get_standard_query();
     }
@@ -91,19 +94,33 @@ function form_query() {
 
 
 function get_standard_query() {
-    $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data WHERE ' .  get_date_range_query_str();
+    $append = false;
 
-    // extra qualifying fields to add to query
-    if (isset($_GET['starting_date'])) {
-        $query = $query . ' AND start_date=' . $_GET['starting_date'];
+    $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data WHERE ';
+
+    if (isset($_GET['start_date']) == false And isset($_GET['end_date']) == false And
+        isset($_GET['tablet_id']) == false) {
+        $query = $query . get_date_range_query_str();
     }
 
-    if (isset($_GET['ending_date'])) {
-        $query = $query . ' AND end_date=' . $_GET['ending_date'];
+    if (isset($_GET['start_date'])) {
+        $query = $query . 'start_date=' . '\'' . $_GET['start_date'] . '\'';
+        $append = true;
+    }
+
+    if (isset($_GET['end_date'])) {
+        if ($append == true) {
+            $query = $query . ' AND ';
+        }
+        $query = $query . 'end_date=' . '\'' . $_GET['end_date'] . '\'';
+        $append = true;
     }
 
     if (isset($_GET['tablet_id'])) {
-        $query = $query . ' AND device_id=' . $_GET['tablet_id'];
+        if ($append == true) {
+            $query = $query . ' AND ';
+        }
+        $query = $query . 'device_id=' .  $_GET['tablet_id'];
     }
 
     $query = $query . ';';
@@ -116,7 +133,7 @@ function get_query_for_tablets_under_deployment($deployment_id) {
     $tablet_ids = get_tablet_ids_under_deployment($deployment_id);
 
     if ($tablet_ids == null) {
-        die('problem');
+        return null;
     }
 
     $id_list_str = make_list_str($tablet_ids);
@@ -125,7 +142,6 @@ function get_query_for_tablets_under_deployment($deployment_id) {
 }
 
 
-// TODO: TEST THIS FOR GETTING MULTIPLE ACTIVE DEPLOYMENTS
 function get_query_for_active_deployments() {
     $query = 'SELECT ' . get_table_fields_to_select() . ' FROM tablet_data WHERE ';
 
@@ -155,7 +171,6 @@ function get_query_for_active_deployments() {
 }
 
 
-// TODO: check null cases
 function get_tablet_ids_under_deployment($deployment_id) {
     $id_list = array();
     $deployment_query = 'SELECT id FROM tablet_information WHERE deployment_information_key=' . $deployment_id  . ';';
@@ -188,6 +203,7 @@ function get_active_deployment_ids() {
 
     return $active_ids;
 }
+
 
 // assumes that the input in not null
 function make_list_str($array) {
@@ -224,19 +240,18 @@ function get_date_range_query_str() {
 function get_table_fields_to_select() {
     $table_fields = '';
 
-    // TODO: I should check for some kind of value with numprobes, numfiles,.. etc
-    if (isset($_GET['server_data']) And $_GET['server_data'] == 'clean') {
-        $table_fields = SERVER_DATA_CLEAN;
-    } elseif (isset($_GET['server_data']) And $_GET['server_data'] == 'uploaded') {
-        $table_fields = SERVER_DATA_UPLOADED;
-    } elseif (isset($_GET['file_data']) And $_GET['file_data'] == 'clean') {
-        $table_fields = FILE_DATA_CLEAN;
-    } elseif (isset($_GET['file_data']) And $_GET['file_data'] == 'uploaded') {
-        $table_fields = FILE_DATA_UPLOADED;
-    } elseif (isset($_GET['num_probes'])) {
-        $table_fields = 'number_of_probes';
-    } elseif (isset($_GET['num_files'])) {
-        $table_fields = 'number_of_files';
+    if (isset($_GET['server_data_clean']) And $_GET['server_data_clean'] == 'true') {
+        $table_fields = SERVER_DATA_CLEAN_FIELD;
+    } elseif (isset($_GET['server_data_uploaded']) And $_GET['server_data_uploaded'] == 'true') {
+        $table_fields = SERVER_DATA_UPLOADED_FIELD;
+    } elseif (isset($_GET['file_data_clean']) And $_GET['file_data_clean'] == 'true') {
+        $table_fields = FILE_DATA_CLEAN_FIELD;
+    } elseif (isset($_GET['file_data_uploaded']) And $_GET['file_data_uploaded'] == 'true') {
+        $table_fields = FILE_DATA_UPLOADED_FIELD;
+    } elseif (isset($_GET['number_of_probes']) And $_GET['number_of_probes'] == 'true') {
+        $table_fields = NUMBER_OF_PROBES_FIELD;
+    } elseif (isset($_GET['number_of_files']) And $_GET['number_of_files'] == 'true') {
+        $table_fields = NUMBER_OF_FILES_FIELD;
     } else {
         die('required field in POST not given');
     }
@@ -274,7 +289,6 @@ function get_result($query) {
 }
 
 
-// TODO: put a time limit of a day on the length this is cached
 function post_json_if_query_cached() {
     // check if the json version of the post is in the cache
     $get_request_json = json_encode($_GET);
@@ -301,6 +315,7 @@ function convert_to_ssepoch($str) {
         return strtotime($str);
     }
 }
+
 
 if (TEST_MODE != 'true') {
     main(null);

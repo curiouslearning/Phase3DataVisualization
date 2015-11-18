@@ -12,81 +12,139 @@ include_once("transporter.php");
 
 
 function run_tests() {
-    test_get_active_deployment_ids(10);
-    test_get_tablet_ids_under_deployment(10);
-    test_active_deployments_query(5);
-    test_tablets_under_deployment_query(4);
-    test_standard_query(4); // TODO: this will cap at days past year
-    //test_all_data_query();
+    $tablet_data_types_under_fields = [ 'server_data_clean_in_kb'=> 'server_data_clean',
+                                        'server_data_uploaded_in_kb' => 'server_data_uploaded',
+                                        'file_data_clean_in_kb' => 'file_data_clean',
+                                        'file_data_uploaded_in_kb' => 'file_data_uploaded',
+                                        'number_of_probes' => 'number_of_probes','number_of_files' => 'number_of_files'];
+    $test_size = 10;
+
+    foreach ($tablet_data_types_under_fields as $table_field => $data_type) {
+        test_active_deployments_query($test_size, $table_field, $data_type);
+        test_tablets_under_deployment_query($test_size, $table_field, $data_type);
+        test_standard_query($test_size, $table_field, $data_type, null);
+        test_optional_fields_query($test_size, $table_field, $data_type, 1, null, null);
+        test_optional_fields_query($test_size, $table_field, $data_type, null, date('Y-m-d', time()), null);
+        test_optional_fields_query($test_size, $table_field, $data_type, null, null, date('Y-m-d', time()));
+    }
+
+    test_get_active_deployment_ids($test_size);
+    test_get_tablet_ids_under_deployment($test_size);
 }
 
 
-// TODO: allow to test on specific tablet id
-// TODO: pick a range and give that to it in this
-// TODO: let the data type be flexible
-// insert information you expect to get back under a specific deployment TODO: dates matter within year
-function test_standard_query($test_size) {
+function test_optional_fields_query($test_size, $table_field, $request_param, $tablet_id, $start_date, $end_date) {
+    $get_request = [$request_param => 'true'];
     $json = array();
+    $data = rand(1, $test_size);
+    $date =  date('Y-m-d', time());
+    $date_str = '\'' . $date . '\'';
 
-    for ($i = 1; $i <= $test_size; $i++) {
-        $today =  date('Y-m-d', time() - $i * 60 * 60 * 24); // dates incrementing backwards by one day
-        $today_str = '\'' . $today . '\'';
-        insert_values_under_fields_in_table([$i, $today_str, $i], ['device_id', 'start_date', 'number_of_files'], 'tablet_data');
-        // default time range is a year TODO: pick a range and give that to it in this
-        // if ($i <= 364) {
-        $json[convert_to_ssepoch($today)] = $i;
+    if ($tablet_id) {
+        insert_values_under_fields_in_table([$tablet_id, $date_str, $data], ['device_id', 'start_date', $table_field],
+                                            'tablet_data');
+        $get_request = $get_request + ['tablet_id' => $tablet_id];
+        $json[convert_to_ssepoch($date)] = $data;
+    } else {
+        $tablet_id = 1;
     }
 
-    $get_request = ['num_files' => 'true'];
+    if ($end_date) {
+        $end_date_str = '\'' . $end_date . '\'';
+        $get_request = $get_request + ['end_date' => $end_date];
+        insert_values_under_fields_in_table([$tablet_id, $date_str, $end_date_str, $data],
+                                            ['device_id', 'start_date', 'end_date', $table_field], 'tablet_data');
+        $json[convert_to_ssepoch($date)] = $data;
+    }
+
+    if ($start_date) {
+        $get_request = $get_request + ['start_date' => $start_date];
+        $start_date_str = '\'' . $start_date . '\'';
+        insert_values_under_fields_in_table([$tablet_id, $start_date_str, $data],
+                                            ['device_id', 'start_date', $table_field], 'tablet_data');
+        $json[convert_to_ssepoch($start_date)] = $data;
+    }
+
     $result_json = main($get_request);
     if (dictionary_contained_in($result_json, $json)) {
-        echo '<pre>' . 'PASSED: test_standard_query' . '</pre>';
+        echo '<pre>' . 'PASSED: test_optional_fields_query with data type ' . $request_param . '</pre>';
     } else {
-        echo '<pre>' . 'FAILED: test_standard_query' . '</pre>';
+        echo '<pre>' . 'FAILED: test_optional_fields_query with data type ' . $request_param  . '</pre>';
+    }
+
+    delete_row_from_table(['device_id' => $tablet_id], 'tablet_data');
+}
+
+
+function test_standard_query($test_size, $table_field, $request_param, $days_before) {
+    $json = array();
+    $now = time();
+
+    if ($days_before != null) {
+        $get_request = [$request_param => 'true', 'max_days_before_now' => $days_before];
+        $max = $days_before;
+    } else {
+        $get_request = [$request_param => 'true'];
+        $max = $test_size;
+    }
+
+    for ($i = 1; $i <= $max; $i++) {
+        $date =  date('Y-m-d', $now - $i * 60 * 60 * 24); // dates incrementing backwards by one day
+        $date_str = '\'' . $date . '\'';
+        insert_values_under_fields_in_table([$i, $date_str, $i], ['device_id', 'start_date', $table_field], 'tablet_data');
+        // default time range is a year
+        if ($i <= 364 Or $days_before ) {
+            $json[convert_to_ssepoch($date)] = $i;
+        }
+    }
+
+    $result_json = main($get_request);
+    if (dictionary_contained_in($result_json, $json)) {
+        echo '<pre>' . 'PASSED: test_standard_query with data type ' . $request_param . '</pre>';
+    } else {
+        echo '<pre>' . 'FAILED: test_standard_query with data type ' . $request_param  . '</pre>';
     }
 
     for ($i = 1; $i <= $test_size; $i++) {
-        delete_row_from_table(['number_of_files' => $i], 'tablet_data');
+        delete_row_from_table([$table_field => $i], 'tablet_data');
     }
 }
 
 
-// TODO: let the data type be flexible
-function test_tablets_under_deployment_query($test_size) {
+function test_tablets_under_deployment_query($test_size, $table_field, $request_param) {
     $json = array();
     $deployment_info_key = rand(1, $test_size);
+    $now = time();
 
     for ($i = 1; $i <= $test_size; $i++) {
         insert_values_under_fields_in_table([$i, $deployment_info_key, 1], ['id', 'deployment_information_key', 'serial_id'],
                                             'tablet_information');
 
-        $today =  date('Y-m-d', time() - $i * 60 * 60 * 24); // dates incrementing backwards by one day
-        $today_str = '\'' . $today . '\'';
-        insert_values_under_fields_in_table([$i, $today_str, $i], ['device_id', 'start_date', 'number_of_files'], 'tablet_data');
-        $json[convert_to_ssepoch($today)] = $i;
+        $date =  date('Y-m-d', $now - $i * 60 * 60 * 24); // dates incrementing backwards by one day
+        $date_str = '\'' . $date . '\'';
+        insert_values_under_fields_in_table([$i, $date_str, $i], ['device_id', 'start_date', $table_field], 'tablet_data');
+        $json[convert_to_ssepoch($date)] = $i;
     }
 
-    $get_request = ['num_files' => 'true', 'deployment_id' => $deployment_info_key];
+    $get_request = [$request_param => 'true', 'deployment_id' => $deployment_info_key];
     $result_json = main($get_request);
     if (dictionary_contained_in($result_json, $json)) {
-        echo '<pre>' . 'PASSED: test_tablets_under_deployment_query' . '</pre>';
+        echo '<pre>' . 'PASSED: test_tablets_under_deployment_query with data type ' . $request_param  . '</pre>';
     } else {
-        echo '<pre>' . 'FAILED: test_tablets_under_deployment_query' . '</pre>';
+        echo '<pre>' . 'FAILED: test_tablets_under_deployment_query with data type ' . $request_param  . '</pre>';
     }
 
     // delete inserted data
     for ($i = 1; $i <= $test_size; $i++) {
         delete_row_from_table(['id' => $i, 'deployment_information_key' => $deployment_info_key], 'tablet_information');
-        delete_row_from_table(['number_of_files' => $i], 'tablet_data');
+        delete_row_from_table([$table_field => $i], 'tablet_data');
     }
 }
 
 
-// TODO: let the data type be flexible
-function test_active_deployments_query($test_size) {
-    $types_of_data = ['num_probes', 'num_files']; // TODO: add this in
-    $data_type = 'num_files';
+function test_active_deployments_query($test_size, $table_field, $request_param) {
     $json = array();
+    $now = time();
 
     for ($i = 1; $i <= $test_size; $i++) {
         // insert active deployment with id $i
@@ -96,19 +154,19 @@ function test_active_deployments_query($test_size) {
         insert_values_under_fields_in_table([$i, $i, 1], ['id', 'deployment_information_key', 'serial_id'], 'tablet_information');
 
         // give that tablet data
-        $today =  date('Y-m-d', time() - $i * 60 * 60 * 24); // dates incrementing backwards by one day
-        $today_str = '\'' . $today . '\'';
-        insert_values_under_fields_in_table([$i, $today_str, $i], ['device_id', 'start_date', 'number_of_files'], 'tablet_data');
-        $json[(string)convert_to_ssepoch($today)] = (string)$i;
+        $date =  date('Y-m-d', $now - $i * 60 * 60 * 24); // dates incrementing backwards by one day
+        $date_str = '\'' . $date . '\'';
+        insert_values_under_fields_in_table([$i, $date_str, $i], ['device_id', 'start_date', $table_field], 'tablet_data');
+        $json[(string)convert_to_ssepoch($date)] = (string)$i;
     }
 
-    // TODO: let the data type be flexible
-    $get_request = [$data_type => 'true', 'data_for_all_active_deployments' => 'true'];
+
+    $get_request = [$request_param => 'true', 'all_active_deployments' => 'true'];
     $result_json = main($get_request);
     if (dictionary_contained_in($result_json, $json)) {
-        echo '<pre>' . 'PASSED: test_active_deployments_query' . '</pre>';
+        echo '<pre>' . 'PASSED: test_active_deployments_query with data type ' . $request_param  . '</pre>';
     } else {
-        echo '<pre>' . 'FAILED: test_active_deployments_query' . '</pre>';
+        echo '<pre>' . 'FAILED: test_active_deployments_query with data type ' . $request_param  . '</pre>';
     }
 
     // delete inserted data
@@ -117,7 +175,7 @@ function test_active_deployments_query($test_size) {
 
         delete_row_from_table(['id' => $i, 'deployment_information_key' => $i], 'tablet_information');
 
-        delete_row_from_table(['number_of_files' => $i], 'tablet_data');
+        delete_row_from_table([$table_field => $i], 'tablet_data');
     }
 }
 
