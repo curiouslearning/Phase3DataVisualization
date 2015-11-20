@@ -161,7 +161,7 @@
         <!-- Nothing above this line should be modified.  It's generated at runtime. -->
 <?php
 
-for($counter  = 0; $counter < 5; $counter++)
+for($counter  = 0; $counter < 3; $counter++)
 {
     echo <<< EOT
 <section class="content">
@@ -190,6 +190,28 @@ for($counter  = 0; $counter < 5; $counter++)
                                 </h2>
                             </div>
                         </div>
+                        <div id="continuous_header" class="box box-primary">
+                            <div id="continuous_header_inner" class="box-header" style="cursor: move;">
+                                    <div class="box-title">
+                                        Continuous Cal Heatmap $counter
+                                    </div>
+                            </div>
+                            <div class="box-body continuous_background">
+                                <div class="container-fluid">
+                                    <h2>
+                                        <div id="continuousHeatmap$counter" class="continuous-heatmap" ></div>
+                                        <div class="button previous" id="previousSelector$counter" >Prev</div>
+                                        <div class="button next" id="nextSelector$counter" >Next</div>
+                                        <div class="button_container">
+                                            <div class="centerwrapper">
+                                                <div class="yearsContinuous$counter" id="yearSelector$counter"></div>
+                                            </div>
+                                        </div>
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </section>
             </div>

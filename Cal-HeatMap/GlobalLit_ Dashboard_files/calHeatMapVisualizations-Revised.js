@@ -2,6 +2,7 @@
 var animationDuration = 1000;
 
 var standardheatmapCounter = 0;
+//var continuousheatmapCounter = 0;
 
 var standardHeatmaps = [];
 var standardHeatmapsYearMarker = [];
@@ -23,9 +24,12 @@ var getStandardHeatmap = function(selector, nextSelector, previousSelector, heat
             // keep track of which year is being viewed
             var firstYear = getFirstYear(data);
 
-            // generate year buttons for both types of heatmap based on date range of data
-            yearButtons(".yearsStandard", getFirstYear(data), getLastYear(data), heatmapNumber);
+            // generate year buttons for heatmap based on date range of data
+            yearButtons(".yearsStandard", getFirstYear(data), getLastYear(data), heatmapNumber, selector);
+
+            // generates month buttons for standard heatmap
             monthButtons(".monthsStandard", heatmapNumber, firstYear);
+
 
             //////////////////////////////////////////////////
             /////////////***STANDARD HEATMAP***///////////////
@@ -74,26 +78,101 @@ var getStandardHeatmap = function(selector, nextSelector, previousSelector, heat
 };
 
 
+var getContinuousHeatmap = function(selector, nextSelector, previousSelector, heatmapNumber)
+{
+    // get data from php page
+    $.get("getprocessedfilecount.php")
+        .error(function()
+        {
+            alert("The request could not be completed.")
+        })
+        .success(function( data ) {
+            // array of values from json data to use when setting legend
+            var inputValues = getInputValues(data);
+
+            // keep track of which year is being viewed
+            var firstYear = getFirstYear(data);
+
+            // generate year buttons for heatmap based on date range of data
+            yearButtons(".yearsContinuous", getFirstYear(data), getLastYear(data), heatmapNumber, selector);
+
+           //////////////////////////////////////////////////
+           /////////////***CONTINUOUS HEATMAP***/////////////
+           //////////////////////////////////////////////////
+           var heatmap = new CalHeatMap();
+    
+           //draw heatmap
+           heatmap.init({
+               itemSelector: selector,
+    
+               itemName: "file",
+               domain: "year",
+               domainMargin: [10, 0, 10, 0],
+               domainDynamicDimension: false, // all domains have same dimension (based on biggest)
+               label: { // domainLabel position
+                   position: "top",
+                   align: "right"
+               },
+               subDomain: "day",
+               start: new Date(2015, 0, 1),
+               data: data, // json data from php file
+               range: 1, // how many domain instances are displayed
+               animationDuration: animationDuration,
+               cellSize: 14,
+               cellRadius: 1,
+               tooltip: true,
+               displayLegend: true,
+               legend: setLegend(inputValues), // customizes legend based on input values of itemNames
+               legendCellSize: 12,
+               legendVerticalPosition: "bottom",
+               legendHorizontalPosition: "center",
+               legendOrientation: "horizontal",
+               legendColors: ["#f4decd", "#ad001d"],
+               legendCellPadding: 1,
+               legendMargin: [0, 0, 5, 0],
+    
+               // defines buttons that scroll through cal
+               nextSelector: "#n",
+               previousSelector: "#prev",
+    
+               onClick: function(date, nb) {
+                   $("#onClick-placeholder").html("<b>" +
+                       (nb === null ? "unknown" : nb)+ "</b> files"
+                   );
+               },    
+            });
+            
+            continuousHeatmaps[heatmapNumber] = heatmap;
+        })
+};
+
+//Create the heatmap(s)
 var idS = "#standardHeatmap"; // instance of standard heatmap
 var heatmap;
-//Create the heatmap(s)
-for(var i = 0; i < 5; i++)
+for(var i = 0; i < 3; i++)
 {
     getStandardHeatmap(idS + i, "#nextSelector" + i, "#previousSelector" + i, i);
 
 }
+var idC = "#continuousHeatmap"; // instance of continuous heatmap
+var heatmap;
+for(var i = 0; i < 3; i++){
+    getContinuousHeatmap(idC + i, "#nextSelector" + i, "#previousSelector" + i, i);
+
+}
+
 
 //Create the buttons
 // generate year buttons
-function yearButtons(container, firstYear, lastYear, heatmapNumber)
+function yearButtons(container, firstYear, lastYear, heatmapNumber, id)
 {
 
     for(var i = firstYear; i <= lastYear + 7; i++){
         $('<div/>', {
             class: "yearButton",
             text: i,
-            onClick: "jumpYear('" + heatmapNumber + "', '"+ i + "');",
-            //id: id,
+            onClick: "jumpYear('" + heatmapNumber + "', '"+ i + "', '"+ id + "');",
+            id: id,
         }).appendTo(container + heatmapNumber);
     }
 
@@ -108,12 +187,28 @@ function monthButtons(container, heatmapNumber, firstYear)
             class: "monthButton",
             onClick: "jumpMonth('" + heatmapNumber + "', '"+ i + "');",
             text: i,
-            //id: id
         }).appendTo(container + heatmapNumber);
     }
 }
 
-var idC = "#Continuous1"; // instance of continuous heatmap
+// jump to specified year on click
+function jumpYear(heatmapNumber, jumpYear, id)
+{
+    if(id.indexOf("standard") != -1){ // check whether to move standard or continuous heatmap
+        standardHeatmapsYearMarker[heatmapNumber] = jumpYear;
+        standardHeatmaps[heatmapNumber].jumpTo(new Date(jumpYear, 0), true);
+    }
+
+    else{
+        continuousHeatmaps[heatmapNumber].jumpTo(new Date(jumpYear, 0), true);
+    }
+}
+
+// jump to specified month on click
+function jumpMonth(heatmapNumber, month)
+{
+    standardHeatmaps[heatmapNumber].jumpTo(new Date(standardHeatmapsYearMarker[heatmapNumber], month-1), true);
+}
 
 // get first year in data range
 function getFirstYear(data){
@@ -147,16 +242,6 @@ function getInputValues(data){
     return input;
 }
 
-//function parseId(id){
-//    var toParse = id;
-//    var type = id[1];
-//    var number = id.substring(2);
-//    //console.log(type);
-//    //console.log(number);
-//    //console.log("heatmap" + type + "[" + number + "]");
-//    return "heatmap" + type + "[" + number + "]";
-//}
-
 // returns an array of legend values based on average input
 function setLegend(input){
     var sum = 0;
@@ -187,18 +272,7 @@ function setLegend(input){
     return legendValues;
 }
 
-//Jump to a the specified month
-function jumpYear(heatmapNumber, jumpYear)
-{
-    standardHeatmapsYearMarker[heatmapNumber] = jumpYear;
-    standardHeatmaps[heatmapNumber].jumpTo(new Date(jumpYear, 0), true);
-}
 
-// jumped to clicked month of current year
-function jumpMonth(heatmapNumber, month)
-{
-    standardHeatmaps[heatmapNumber].jumpTo(new Date(standardHeatmapsYearMarker[heatmapNumber], month-1), true);
-}
 
 
     //parseId(idS);
