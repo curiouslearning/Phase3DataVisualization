@@ -272,6 +272,23 @@ function setLegend(input){
     return legendValues;
 }
 
+// allow tooltips to overflow heatmap container to ensure readability
+$(window).load(function (){
+    var tooltip = document.getElementsByClassName("ch-tooltip");
+    var insert = document.getElementsByClassName("container-fluid");
+    var parents = [];
+    var divs = [];
+
+    for(var i = 0; i < insert.length; i++){
+
+        divs[i] = document.createElement("div");
+        divs[i].className = "tooltip_container";
+        parents[i] = insert[i].parentNode;
+        parents[i].insertBefore(divs[i], insert[i]);
+        divs[i].appendChild(tooltip[i]);
+    }    
+});
+
 
 
 
