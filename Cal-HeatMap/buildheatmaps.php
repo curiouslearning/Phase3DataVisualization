@@ -177,8 +177,8 @@ for($counter  = 0; $counter < 3; $counter++)
                             <div class="container-fluid">
                                 <h2>
                                     <div id="standardHeatmap$counter" class="standard-heatmap" ></div>
-                                    <div class="button previous" id="previousSelector$counter" >Prev</div>
-                                    <div class="button next" id="nextSelector$counter" >Next</div>
+                                    <div class="button previous" id="standardPreviousSelector$counter" >Prev</div>
+                                    <div class="button next" id="standardNextSelector$counter" >Next</div>
                                     <div class="button_container">
                                         <div class="centerwrapper">
                                             <div class="yearsStandard$counter" id="yearSelector$counter"></div>
@@ -200,8 +200,8 @@ for($counter  = 0; $counter < 3; $counter++)
                                 <div class="container-fluid">
                                     <h2>
                                         <div id="continuousHeatmap$counter" class="continuous-heatmap" ></div>
-                                        <div class="button previous" id="previousSelector$counter" >Prev</div>
-                                        <div class="button next" id="nextSelector$counter" >Next</div>
+                                        <div class="button previous" id="continuousPreviousSelector$counter" >Prev</div>
+                                        <div class="button next" id="continuousNextSelector$counter" >Next</div>
                                         <div class="button_container">
                                             <div class="centerwrapper">
                                                 <div class="yearsContinuous$counter" id="yearSelector$counter"></div>

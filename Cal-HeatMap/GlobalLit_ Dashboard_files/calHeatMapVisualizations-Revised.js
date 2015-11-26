@@ -71,7 +71,7 @@ var getStandardHeatmap = function(selector, nextSelector, previousSelector, heat
 
                     // defines buttons that scroll through cal
                     nextSelector: nextSelector,
-                    previousSelector: previousSelector
+                    previousSelector: previousSelector,
                 });
             standardHeatmaps[heatmapNumber] = heatmap;
         })
@@ -132,8 +132,8 @@ var getContinuousHeatmap = function(selector, nextSelector, previousSelector, he
                legendMargin: [0, 0, 5, 0],
     
                // defines buttons that scroll through cal
-               nextSelector: "#n",
-               previousSelector: "#prev",
+               nextSelector: nextSelector,
+               previousSelector: previousSelector,
     
                onClick: function(date, nb) {
                    $("#onClick-placeholder").html("<b>" +
@@ -151,13 +151,13 @@ var idS = "#standardHeatmap"; // instance of standard heatmap
 var heatmap;
 for(var i = 0; i < 3; i++)
 {
-    getStandardHeatmap(idS + i, "#nextSelector" + i, "#previousSelector" + i, i);
+    getStandardHeatmap(idS + i, "#standardNextSelector" + i, "#standardPreviousSelector" + i, i);
 
 }
 var idC = "#continuousHeatmap"; // instance of continuous heatmap
 var heatmap;
 for(var i = 0; i < 3; i++){
-    getContinuousHeatmap(idC + i, "#nextSelector" + i, "#previousSelector" + i, i);
+    getContinuousHeatmap(idC + i, "#continuousNextSelector" + i, "#continuousPreviousSelector" + i, i);
 
 }
 

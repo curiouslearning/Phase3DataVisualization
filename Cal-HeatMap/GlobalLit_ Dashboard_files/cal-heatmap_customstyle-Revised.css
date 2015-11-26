@@ -83,18 +83,6 @@
     float: right;
 }
 
-#n {
-    font-size: 20px;
-    display: inline-block;
-    float: right;
-}
-
-#prev {
-    font-size: 20px;
-    display: inline-block;
-    float: left;
-}
-
 .button_container{
     margin: 0 auto;
 }
