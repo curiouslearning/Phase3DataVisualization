@@ -30,7 +30,6 @@
 }
 
 .continuous-heatmap .cal-heatmap-container {
-    /*background-color: #f4decd;*/
     border-radius: 5px;
     padding-left: 10px;
     margin: auto;
@@ -38,7 +37,6 @@
 }
 
 .cal-heatmap-container {
-    /*background-color: #f4decd;*/
     border-radius: 5px;
     padding-left: 10px;
     margin: auto;
@@ -90,7 +88,6 @@
 .centerwrapper
 {
     margin: auto;
-    /*width: 302pt; */
     display: table;
 }
 
@@ -189,7 +186,7 @@
     content: "";
     padding: 0;
     display: block;
-    bottom: 0px; /*bottom: -6px for little pointer*/
+    bottom: 0px;
     left: 50%;
     margin-left: 25px;
     border-width: 6px 6px 0;
