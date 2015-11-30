@@ -1,0 +1,202 @@
+.cal-heatmap-container .subdomain-text  {
+    font-size: 8px;
+    fill: #000000;
+}
+
+.standard_background {
+    background-color: #3c8dbc;
+    margin-bottom: 20px;
+    overflow: auto;
+}
+
+.continuous_background{
+    background-color: #ad001d;
+    overflow: auto;
+}
+
+#continuous_header {
+    border-top-color: #ad001d;
+}
+
+.standard-heatmap
+{
+    border-style: solid;
+    border-width: 0px;
+    border-radius: 25px;
+    background-color: white;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    margin: auto;
+}
+
+.continuous-heatmap .cal-heatmap-container {
+    border-radius: 5px;
+    padding-left: 10px;
+    margin: auto;
+    background-color: #fff;
+}
+
+.cal-heatmap-container {
+    border-radius: 5px;
+    padding-left: 10px;
+    margin: auto;
+    background-color: #fff;
+}
+
+.standard-heatmap .cal-heatmap-container .graph-label
+{
+    font-size: 15px;
+    fill: #000000;
+}
+
+.continuous-heatmap .cal-heatmap-container .graph-label
+{
+    font-size: 15px;
+    fill: #000000;
+}
+
+.button {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    background-color: white;
+    margin-top: 10px;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-bottom: 5px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.previous {
+    font-size: 20px;
+    display: inline-block;
+    float: left;
+}
+
+.next {
+    font-size: 20px;
+    display: inline-block;
+    float: right;
+}
+
+.button_container{
+    margin: 0 auto;
+}
+
+.centerwrapper
+{
+    margin: auto;
+    display: table;
+}
+
+
+.yearButton{
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    background-color: white;
+    margin-top: 10px;
+    margin-right: 2px;
+    margin-left: 2px;
+    padding-top: 2px;
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-bottom: 2px;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+    display: inline;
+}
+
+
+
+.yearsContinuous{
+    display: table;
+    margin: 0 auto;
+}
+
+#months{
+    display: table;
+    margin: 0 auto;
+}
+
+.monthButton{
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    background-color: white;
+    margin-left: 2px;
+    padding-top: 2px;
+    padding-right: 3px;
+    padding-left: 3px;
+    padding-bottom: 2px;
+    cursor: pointer;
+    font-size: 13px;
+    display: inline-block;
+}
+
+
+#days{
+    display: inline-block;
+    font-size: 15px;
+    width: 15px;
+    word-wrap: break-word;
+    position: absolute;
+    margin-top: 36px;
+    margin-left: 5px;
+    background-color: white;
+    text-align: center;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    z-index: 2;
+}
+
+#onClick-placeholder {
+    margin-top: 10px;
+    font-size: 15px;
+    color: #000000;
+    margin-left: 28px;
+}
+
+.ch-tooltip {
+    padding: 10px;
+    background: #222;
+    color: #bbb;
+    font-size: 12px;
+    line-height: 1.4;
+    width: 140px;
+    position: absolute;
+    z-index: 99999;
+    text-align: center;
+    border-radius: 2px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+    display: none;
+    box-sizing: border-box;
+}
+
+.ch-tooltip::after{
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    content: "";
+    padding: 0;
+    display: block;
+    bottom: 0px;
+    left: 50%;
+    margin-left: 25px;
+    border-width: 6px 6px 0;
+    border-top-color: #222;
+}
+
+.content {
+    overflow: visible;
+}
+
+.tooltip_container {
+    position: absolute;
+}

@@ -1,14 +1,6 @@
     //Globals
     var animationDuration = 1000;
 
-    for(var num = 0; num < 1; num++){
-
-        var idS = "#S" + num; // instance of standard heatmap
-        var idC = "#C" + num; // instance of continuous heatmap
-        var heatmapsS = [];
-        var heatmapsC = [];
-
-
         // get data from php page
         $.get("getprocessedfilecount.php")
         .error(function()
@@ -23,18 +15,20 @@
             var yearCurrent = getFirstYear(data);
 
             // generate year buttons for both types of heatmap based on date range of data
-            yearButtons(idS, ".yearsStandard",  getFirstYear(data), getLastYear(data));
-            yearButtons(idC, ".yearsContinuous", getFirstYear(data), getLastYear(data));
+            yearButtons(getFirstYear(data), getLastYear(data));
+
+            // generate month buttons for standard heatmap
+            monthButtons();
 
             //////////////////////////////////////////////////
             /////////////***STANDARD HEATMAP***///////////////
             //////////////////////////////////////////////////
-            heatmapsS[num] = new CalHeatMap();
-            console.log(heatmapsS[num]);
+            heatmapS = new CalHeatMap();
+           // console.log(heatmapsS[num]);
 
             // draw heatmap
-            heatmapsS[num].init({
-                itemSelector: idS,
+            heatmapS.init({
+                itemSelector: "#standard_heatmap",
 
                 itemName: "file",
                 domain: "month",
@@ -76,11 +70,11 @@
             //////////////////////////////////////////////////
             /////////////***CONTINUOUS HEATMAP***/////////////
             //////////////////////////////////////////////////
-            var continuous1 = new CalHeatMap();
+            var heatmapC = new CalHeatMap();
 
             //draw heatmap
-            continuous1.init({
-                itemSelector: "#continuous1",
+            heatmapC.init({
+                itemSelector: "#continuous_heatmap",
 
                 itemName: "file",
                 domain: "year",
@@ -185,31 +179,55 @@
             }
 
             // generate year buttons
-            function yearButtons(id, container, firstYear, lastYear){
+            function yearButtons(firstYear, lastYear){
                 for(var i = firstYear; i <= lastYear + 7; i++){
-                    $('<div/>', {
+                    $('<button/>', {
                         class: "yearButton",
                         text: i,
-                        id: id,
-                    }).appendTo(container);
+                    })
+                    .appendTo(".years");
+
                 }
-                monthButtons();
+                changeYear();
             }
     
             // generate month buttons
             function monthButtons(){
                 for(var i = 1; i <= 12; i++){
-                    $('<div/>', {
+                    $('<button/>', {
                         class: "monthButton",
                         text: i,
                     }).appendTo('#months');
                 }
+                changeMonth();
             }
 
-        
-   
+            // jump to clicked year
+            function changeYear(){
+                $(".yearButton").on("click", function(event) {
+                    if($(this).parent().parent().parent().attr("id") == "standard"){ // but this is not modular...
+                        heatmapS.jumpTo(new Date($(this).text(), 0), true);
+                    }
+                    else{
+                        heatmapC.jumpTo(new Date($(this).text(), 0), true);
+                    }
+                    yearCurrent = $(this).text();
+                });
+            }
 
-            /* //gives each heatmap unique id
+            // jumped to clicked month of current year
+            function changeMonth() {
+                $(".monthButton").on("click", function(event) {
+                    heatmapS.jumpTo(new Date(yearCurrent, $(this).text() - 1), true);
+                });
+            }
+        });
+
+         /*console.log($(".r1").parent().parent());
+            $(".r1").tipsy();*/
+        
+
+         /* //gives each heatmap unique id
             function createMapId(num){
                 var newId;
                 if(type == "standard"){
@@ -222,7 +240,7 @@
                 return newId;
             }*/
 
-            function parseId(id){
+           /* function parseId(id){
                 var toParse = id;
                 var type = id[1];
                 var number = id.substring(2);
@@ -232,44 +250,7 @@
                 return "heatmap" + type + "[" + number + "]";
             }
 
-            parseId(idS);
-
-            // jump to clicked year
-            $(".yearButton").on("click", function(event) {
-
-                var heatmapToJump = parseId($(this).attr("id"));
-                console.log(heatmapToJump);
-                heatmapsS[num].jumpTo(new Date($(this).text(), 0), true);
-               // heatmapToJump.jumpTo(new Date($(this).text(), 0), true); // doesn't work bc ___.jumpTo needs to be exactly same as name of cal
-
-              // console.log(heatmapsS[num]);
-              // heatmapsS[num] = heatmapToJump;
-              // console.log(heatmapsS[num]);
-              //  console.log($(this).attr("id"));
-                /*if($(this).parent().parent().parent().attr("id") == "standard"){ // but this is not modular...
-                    heatmapsS[num].jumpTo(new Date($(this).text(), 0), true);
-                   
-                }
-                else{
-                    continuous1.jumpTo(new Date($(this).text(), 0), true);
-                }*/
-                yearCurrent = $(this).text();
-            });
-
-            // jumped to clicked month of current year
-            $(".monthButton").on("click", function(event) {
-                heatmapsS[num].jumpTo(new Date(yearCurrent, $(this).text() - 1), true);
-            });
-
-            /*console.log($(".r1").parent().parent());
-            $(".r1").tipsy();*/
-
-
-
-
-        });
-    };
-        
+            parseId(idS);*/
 
        /*  // date range picker calendar
         $(function() {
