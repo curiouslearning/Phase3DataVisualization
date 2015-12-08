@@ -8,10 +8,10 @@ var standardHeatmapsYearMarker = [];
 var continuousHeatmaps = [];
 
 
-var getStandardHeatmap = function(selector, nextSelector, previousSelector, heatmapNumber)
+var getStandardHeatmap = function(selector, nextSelector, previousSelector, heatmapNumber, deployment_id)
 {
-    // get data from php page
-    $.get("getprocessedfilecount.php")
+    var payload = {'number_of_files' : 'true', 'deployment_id' : deployment_id};
+    $.get("../../backend/visualization_endpoint.php", payload)
         .error(function()
         {
             alert("The request could not be completed.")
@@ -34,58 +34,59 @@ var getStandardHeatmap = function(selector, nextSelector, previousSelector, heat
             /////////////***STANDARD HEATMAP***///////////////
             //////////////////////////////////////////////////
             var heatmap = new CalHeatMap();
-                heatmap.init({
-                    itemSelector: selector,
+            heatmap.init({
+                itemSelector: selector,
 
-                    itemName: "file",
-                    domain: "month",
-                    domainMargin: [10, 0, 10, 0],
-                    domainDynamicDimension: false, // all domains have same dimension (based on biggest)
-                    label: { // domainLabel position
-                        position: "top",
-                        align: "center"
-                    },
-                    subDomain: "day",
-                    //display number of itemNames instead of date inside subDomain
-                    subDomainTextFormat: function (date, value) {
-                        //Reduce number of digits to save space inside cell
-                        return (value > 1000) ? (value / 1000).toFixed(1) + "k" : value;
-                    },
-                    start: new Date(2015, 0, 1),
-                    data: data, // json data from php file
-                    range: 6, // how many domain instances are displayed
-                    animationDuration: animationDuration,
-                    cellSize: 23,
-                    cellRadius: 1,
-                    tooltip: true,
-                    displayLegend: true,
-                    legend: setLegend(inputValues), // customizes legend based on input values of itemNames
-                    legendCellSize: 17,
-                    legendVerticalPosition: "bottom",
-                    legendHorizontalPosition: "center",
-                    legendOrientation: "horizontal",
-                    legendColors: ["#efefef", "steelblue"],
-                    legendCellPadding: 1.2,
-                    legendMargin: [10, 0, 10, 0],
+                itemName: "file",
+                domain: "month",
+                domainMargin: [10, 0, 10, 0],
+                domainDynamicDimension: false, // all domains have same dimension (based on biggest)
+                label: { // domainLabel position
+                    position: "top",
+                    align: "center"
+                },
+                subDomain: "day",
+                //display number of itemNames instead of date inside subDomain
+                subDomainTextFormat: function (date, value) {
+                    //Reduce number of digits to save space inside cell
+                    return (value > 1000) ? (value / 1000).toFixed(1) + "k" : value;
+                },
+                start: new Date(2015, 0, 1),
+                data: data, // json data from php file
+                range: 6, // how many domain instances are displayed
+                animationDuration: animationDuration,
+                cellSize: 23,
+                cellRadius: 1,
+                tooltip: true,
+                displayLegend: true,
+                legend: setLegend(inputValues), // customizes legend based on input values of itemNames
+                legendCellSize: 17,
+                legendVerticalPosition: "bottom",
+                legendHorizontalPosition: "center",
+                legendOrientation: "horizontal",
+                legendColors: ["#efefef", "steelblue"],
+                legendCellPadding: 1.2,
+                legendMargin: [10, 0, 10, 0],
 
-                    // defines buttons that scroll through cal
-                    nextSelector: nextSelector,
-                    previousSelector: previousSelector,
-                });
+                // defines buttons that scroll through cal
+                nextSelector: nextSelector,
+                previousSelector: previousSelector,
+            });
             standardHeatmaps[heatmapNumber] = heatmap;
         })
 };
 
 
-var getContinuousHeatmap = function(selector, nextSelector, previousSelector, heatmapNumber)
+var getContinuousHeatmap = function(selector, nextSelector, previousSelector, heatmapNumber, deployment_id)
 {
-    // get data from php page
-    $.get("getprocessedfilecount.php")
+    var payload = {'number_of_probes' : 'true', 'deployment_id' : deployment_id};
+    $.get("../../backend/visualization_endpoint.php", payload)
         .error(function()
         {
             alert("The request could not be completed.")
         })
         .success(function( data ) {
+
             // array of values from json data to use when setting legend
             var inputValues = getInputValues(data);
 
@@ -95,69 +96,85 @@ var getContinuousHeatmap = function(selector, nextSelector, previousSelector, he
             // generate year buttons for heatmap based on date range of data
             yearButtons(".yearsContinuous", getFirstYear(data), getLastYear(data), heatmapNumber, selector);
 
-           //////////////////////////////////////////////////
-           /////////////***CONTINUOUS HEATMAP***/////////////
-           //////////////////////////////////////////////////
-           var heatmap = new CalHeatMap();
-    
-           //draw heatmap
-           heatmap.init({
-               itemSelector: selector,
-    
-               itemName: "file",
-               domain: "year",
-               domainMargin: [10, 0, 10, 0],
-               domainDynamicDimension: false, // all domains have same dimension (based on biggest)
-               label: { // domainLabel position
-                   position: "top",
-                   align: "right"
-               },
-               subDomain: "day",
-               start: new Date(2015, 0, 1),
-               data: data, // json data from php file
-               range: 1, // how many domain instances are displayed
-               animationDuration: animationDuration,
-               cellSize: 14,
-               cellRadius: 1,
-               tooltip: true,
-               displayLegend: true,
-               legend: setLegend(inputValues), // customizes legend based on input values of itemNames
-               legendCellSize: 12,
-               legendVerticalPosition: "bottom",
-               legendHorizontalPosition: "center",
-               legendOrientation: "horizontal",
-               legendColors: ["#f4decd", "#ad001d"],
-               legendCellPadding: 1,
-               legendMargin: [0, 0, 5, 0],
-    
-               // defines buttons that scroll through cal
-               nextSelector: nextSelector,
-               previousSelector: previousSelector,
-    
-               onClick: function(date, nb) {
-                   $("#onClick-placeholder").html("<b>" +
-                       (nb === null ? "unknown" : nb)+ "</b> files"
-                   );
-               },    
+            //////////////////////////////////////////////////
+            /////////////***CONTINUOUS HEATMAP***/////////////
+            //////////////////////////////////////////////////
+            var heatmap = new CalHeatMap();
+
+            //draw heatmap
+            heatmap.init({
+                itemSelector: selector,
+
+                itemName: "file",
+                domain: "year",
+                domainMargin: [10, 0, 10, 0],
+                domainDynamicDimension: false, // all domains have same dimension (based on biggest)
+                label: { // domainLabel position
+                    position: "top",
+                    align: "right"
+                },
+                subDomain: "day",
+                start: new Date(2015, 0, 1),
+                data: data, // json data from php file
+                range: 1, // how many domain instances are displayed
+                animationDuration: animationDuration,
+                cellSize: 14,
+                cellRadius: 1,
+                tooltip: true,
+                displayLegend: true,
+                legend: setLegend(inputValues), // customizes legend based on input values of itemNames
+                legendCellSize: 12,
+                legendVerticalPosition: "bottom",
+                legendHorizontalPosition: "center",
+                legendOrientation: "horizontal",
+                legendColors: ["#f4decd", "#ad001d"],
+                legendCellPadding: 1,
+                legendMargin: [0, 0, 5, 0],
+
+                // defines buttons that scroll through cal
+                nextSelector: nextSelector,
+                previousSelector: previousSelector,
+
+                onClick: function(date, nb) {
+                    $("#onClick-placeholder").html("<b>" +
+                        (nb === null ? "unknown" : nb)+ "</b> files"
+                    );
+                },
             });
-            
             continuousHeatmaps[heatmapNumber] = heatmap;
         })
 };
 
-//Create the heatmap(s)
-var idS = "#standardHeatmap"; // instance of standard heatmap
-var heatmap;
-for(var i = 0; i < 3; i++)
-{
-    getStandardHeatmap(idS + i, "#standardNextSelector" + i, "#standardPreviousSelector" + i, i);
 
-}
-var idC = "#continuousHeatmap"; // instance of continuous heatmap
-var heatmap;
-for(var i = 0; i < 3; i++){
-    getContinuousHeatmap(idC + i, "#continuousNextSelector" + i, "#continuousPreviousSelector" + i, i);
-}
+$.get( "../../backend/deployments_for_user.php")
+    .error(function() {
+        alert("Deployments for this user could not be loaded.")
+    })
+    .success(function( ids ) {
+        console.log('ids', ids);
+        var length = ids.length;
+        var idS = "#standardHeatmap";
+        var idC = "#continuousHeatmap";
+        var deployment_id = null;
+        for (var i = 0; i < length; i++) {
+            deployment_id = ids[0];
+            getStandardHeatmap(idS + i, "#standardNextSelector" + i, "#standardPreviousSelector" + i, i, deployment_id);
+            getContinuousHeatmap(idC + i, "#continuousNextSelector" + i, "#continuousPreviousSelector" + i, i, deployment_id);
+        }
+
+        $.get("../../backend/names_for_deployments.php")
+            .success(function (deployment_names) {
+
+            })
+        // change the titles of the heatmaps to match the deployments
+        /*
+         <div class="box-title">
+         Continuous Cal Heatmap $counter
+         </div>
+         */
+
+
+    });
 
 
 //Create the buttons
@@ -226,7 +243,6 @@ function getLastYear(data){
 }
 
 
-
 // gets values from json data
 function getInputValues(data){
     var input = new Array;
@@ -237,6 +253,7 @@ function getInputValues(data){
     }
     return input;
 }
+
 
 // returns an array of legend values based on average input
 function setLegend(input){
@@ -268,6 +285,7 @@ function setLegend(input){
     return legendValues;
 }
 
+
 // allow tooltips to overflow heatmap container to ensure readability
 $(window).load(function (){
     var tooltip = document.getElementsByClassName("ch-tooltip");
@@ -276,12 +294,11 @@ $(window).load(function (){
     var divs = [];
 
     for(var i = 0; i < insert.length; i++){
-
         divs[i] = document.createElement("div");
         divs[i].className = "tooltip_container";
         parents[i] = insert[i].parentNode;
         parents[i].insertBefore(divs[i], insert[i]);
         divs[i].appendChild(tooltip[i]);
-    }    
+    }
 });
 
