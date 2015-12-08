@@ -33,8 +33,7 @@ define('DEFAULT_DATE_RANGE_IN_DAYS', '365');
 define('DEFAULT_DATE_RANGE_FIELD', 'created_on');
 define('JSON_DATE_KEY_FIELD', 'start_date');
 
-define('TEST_MODE', 'true');
-
+define('TEST_MODE', 'false');
 
 function main($test_request) {
     if (TEST_MODE == 'true') {
@@ -50,7 +49,7 @@ function main($test_request) {
     if ($query == null) {
         die('could not form query from request');
     }
-
+    var_dump($query);
     $result = get_result($query);
     if ($result == null) {
         die('query returned no data');
@@ -137,7 +136,7 @@ function get_query_for_tablets_under_deployment($deployment_id) {
     }
 
     $id_list_str = make_list_str($tablet_ids);
-    $query = $query . 'device_id IN ' . $id_list_str . ';';
+    $query = $query . 'device_id IN ' . $id_list_str . ' AND ' . get_date_range_query_str() . ';';
     return $query;
 }
 

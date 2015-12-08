@@ -160,7 +160,20 @@
 
         <!-- Nothing above this line should be modified.  It's generated at runtime. -->
 <?php
-
+/*
+ * To get a listing of all deployments that are linked to a user, use _select * from deployment_mapping where
+ * user_id = x;_ where _x_ is the user_id.
+ * This can be hard coded for testing.
+ * This will be pulled from the session information when pushed to the live server.
+ *
+ *
+ * Loop over the same heatmaps but point the Ajax call in the JS (calHeatMapVisualizations-Revised.js)
+ * to the newly created API instead of the current PHP page,
+ * using the query above to pull all deployments that are linked to a user
+ */
+// get counter by the number of deployments that the the user is linked to
+// i.e. make an api call and set it to num deployment
+// get the name of the deployment using  Select name from deployment_school where deployment_id = ..;
 for($counter  = 0; $counter < 3; $counter++)
 {
     echo <<< EOT
