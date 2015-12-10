@@ -160,6 +160,7 @@
 
         <!-- Nothing above this line should be modified.  It's generated at runtime. -->
 <?php
+include_once("../backend/deployments_for_user.php");
 /*
  * To get a listing of all deployments that are linked to a user, use _select * from deployment_mapping where
  * user_id = x;_ where _x_ is the user_id.
@@ -174,8 +175,9 @@
 // get counter by the number of deployments that the the user is linked to
 // i.e. make an api call and set it to num deployment
 // get the name of the deployment using  Select name from deployment_school where deployment_id = ..;
-for($counter  = 0; $counter < 3; $counter++)
-{
+$deployment_names = get_name_of_deployments_for_user_in_session();
+
+foreach ($deployment_names as $index => $name) {
     echo <<< EOT
 <section class="content">
             <div class="row">
@@ -183,21 +185,21 @@ for($counter  = 0; $counter < 3; $counter++)
                     <div class="box box-primary">
                         <div class="box-header" style="cursor: move;">
                             <div class="box-title">
-                                Standard Cal Heatmap $counter
+                                $name
                             </div>
                         </div>
                         <div class="box-body standard_background">
                             <div class="container-fluid">
                                 <h2>
-                                    <div id="standardHeatmap$counter" class="standard-heatmap" ></div>
-                                    <div class="button previous" id="standardPreviousSelector$counter" >Prev</div>
-                                    <div class="button next" id="standardNextSelector$counter" >Next</div>
+                                    <div id="standardHeatmap$index" class="standard-heatmap" ></div>
+                                    <div class="button previous" id="standardPreviousSelector$index" >Prev</div>
+                                    <div class="button next" id="standardNextSelector$index" >Next</div>
                                     <div class="button_container">
                                         <div class="centerwrapper">
-                                            <div class="yearsStandard$counter" id="yearSelector$counter"></div>
+                                            <div class="yearsStandard$index" id="yearSelector$index"></div>
                                         </div>
                                         <div class="centerwrapper">
-                                            <div class="monthsStandard$counter" id="monthSelector$counter"></div>
+                                            <div class="monthsStandard$index" id="monthSelector$index"></div>
                                         </div>
                                     </div>
                                 </h2>
@@ -206,18 +208,18 @@ for($counter  = 0; $counter < 3; $counter++)
                         <div id="continuous_header" class="box box-primary">
                             <div id="continuous_header_inner" class="box-header" style="cursor: move;">
                                     <div class="box-title">
-                                        Continuous Cal Heatmap $counter
+                                        $name
                                     </div>
                             </div>
                             <div class="box-body continuous_background">
                                 <div class="container-fluid">
                                     <h2>
-                                        <div id="continuousHeatmap$counter" class="continuous-heatmap" ></div>
-                                        <div class="button previous" id="continuousPreviousSelector$counter" >Prev</div>
-                                        <div class="button next" id="continuousNextSelector$counter" >Next</div>
+                                        <div id="continuousHeatmap$index" class="continuous-heatmap" ></div>
+                                        <div class="button previous" id="continuousPreviousSelector$index" >Prev</div>
+                                        <div class="button next" id="continuousNextSelector$index" >Next</div>
                                         <div class="button_container">
                                             <div class="centerwrapper">
-                                                <div class="yearsContinuous$counter" id="yearSelector$counter"></div>
+                                                <div class="yearsContinuous$index" id="yearSelector$index"></div>
                                             </div>
                                         </div>
                                     </h2>

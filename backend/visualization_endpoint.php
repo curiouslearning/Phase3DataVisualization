@@ -8,6 +8,7 @@
 
 include_once("transporter.php");
 include_once("jsonminify.php");
+include_once("backend_utils.php");
 
 // gzip output buffer
 ob_start('ob_gzhandler');
@@ -31,9 +32,12 @@ define('DATA_UNDER_DEPLOYMENT_PARAM', 'deployment_id');
 // how many days of data to return if no range is given
 define('DEFAULT_DATE_RANGE_IN_DAYS', '365');
 define('DEFAULT_DATE_RANGE_FIELD', 'created_on');
-define('JSON_DATE_KEY_FIELD', 'start_date');
+define('JSON_DATE_KEY_FIELD', 'created_on');
 
 define('TEST_MODE', 'false');
+
+
+$_GET = ['number_of_probes' => 'true', 'deployment_id' => 22];
 
 function main($test_request) {
     if (TEST_MODE == 'true') {
@@ -46,10 +50,11 @@ function main($test_request) {
     }
 
     $query = form_query();
+
     if ($query == null) {
         die('could not form query from request');
     }
-    var_dump($query);
+
     $result = get_result($query);
     if ($result == null) {
         die('query returned no data');
@@ -66,6 +71,7 @@ function main($test_request) {
     if (TEST_MODE == 'true') {
         return $data;
     }
+
 
     $result_json = json_encode($data);
     $json_minify = new JSONMin($result_json);
@@ -204,23 +210,6 @@ function get_active_deployment_ids() {
 }
 
 
-// assumes that the input in not null
-function make_list_str($array) {
-    $list_str = '(';
-    $length = count($array);
-    $i = 0;
-    foreach ($array as $element) {
-        $list_str = $list_str . $element;
-        if ($i < $length - 1) {
-            $list_str = $list_str . ', ';
-        }
-        $i += 1;
-    }
-    $list_str = $list_str . ')';
-    return $list_str;
-}
-
-
 function get_date_range_query_str() {
     $days_before_now = null;
 
@@ -261,33 +250,6 @@ function get_table_fields_to_select() {
 }
 
 
-function get_result($query) {
-    $transporter = new Transporter();
-    $dbh = $transporter->dbConnectPdo();
-    if ($dbh == null) {
-        // error connecting to database
-        return null;
-    }
-
-    $statement = $dbh->prepare($query);
-    $success = $statement->execute();
-
-    if ($success == false) {
-        // error executing query
-        return null;
-    }
-
-    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-    if ($result == false) {
-        // no results to fetch
-        return null;
-    }
-
-    return $result;
-}
-
-
 function post_json_if_query_cached() {
     // check if the json version of the post is in the cache
     $get_request_json = json_encode($_GET);
@@ -298,12 +260,6 @@ function post_json_if_query_cached() {
         post_json($data_json);
     }
     return $was_posted;
-}
-
-
-function post_json($json) {
-    header('Content-Type: application/json');
-    echo $json;
 }
 
 
