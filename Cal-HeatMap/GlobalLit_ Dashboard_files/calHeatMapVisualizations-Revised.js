@@ -167,7 +167,7 @@ $.get( "../../backend/deployments_for_user.php", payload)
 // generate year buttons
 function yearButtons(container, firstYear, lastYear, heatmapNumber, id)
 {
-    for(var i = firstYear; i <= lastYear + 7; i++){
+    for(var i = firstYear; i <= lastYear; i++){
         $('<div/>', {
             class: "yearButton",
             text: i,
