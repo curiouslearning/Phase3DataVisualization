@@ -70,7 +70,7 @@ var getStandardHeatmap = function(selector, nextSelector, previousSelector, heat
 
                 // defines buttons that scroll through cal
                 nextSelector: nextSelector,
-                previousSelector: previousSelector,
+                previousSelector: previousSelector
             });
             standardHeatmaps[heatmapNumber] = heatmap;
         })
@@ -86,7 +86,6 @@ var getContinuousHeatmap = function(selector, nextSelector, previousSelector, he
             alert("The request could not be completed.")
         })
         .success(function( data ) {
-
             // array of values from json data to use when setting legend
             var inputValues = getInputValues(data);
 
@@ -139,41 +138,28 @@ var getContinuousHeatmap = function(selector, nextSelector, previousSelector, he
                     $("#onClick-placeholder").html("<b>" +
                         (nb === null ? "unknown" : nb)+ "</b> files"
                     );
-                },
+                }
             });
             continuousHeatmaps[heatmapNumber] = heatmap;
         })
 };
 
-
-$.get( "../../backend/deployments_for_user.php")
+var payload = {'deployment_ids' : 'true'};
+$.get( "../../backend/deployments_for_user.php", payload)
     .error(function() {
         alert("Deployments for this user could not be loaded.")
     })
     .success(function( ids ) {
-        console.log('ids', ids);
+        console.log('ids', ids, 'length', ids.length);
         var length = ids.length;
         var idS = "#standardHeatmap";
         var idC = "#continuousHeatmap";
         var deployment_id = null;
         for (var i = 0; i < length; i++) {
-            deployment_id = ids[0];
+            deployment_id = ids[i];
             getStandardHeatmap(idS + i, "#standardNextSelector" + i, "#standardPreviousSelector" + i, i, deployment_id);
             getContinuousHeatmap(idC + i, "#continuousNextSelector" + i, "#continuousPreviousSelector" + i, i, deployment_id);
         }
-
-        $.get("../../backend/names_for_deployments.php")
-            .success(function (deployment_names) {
-
-            })
-        // change the titles of the heatmaps to match the deployments
-        /*
-         <div class="box-title">
-         Continuous Cal Heatmap $counter
-         </div>
-         */
-
-
     });
 
 
@@ -186,7 +172,7 @@ function yearButtons(container, firstYear, lastYear, heatmapNumber, id)
             class: "yearButton",
             text: i,
             onClick: "jumpYear('" + heatmapNumber + "', '"+ i + "', '"+ id + "');",
-            id: id,
+            id: id
         }).appendTo(container + heatmapNumber);
     }
 }
@@ -199,7 +185,7 @@ function monthButtons(container, heatmapNumber, firstYear)
         $('<div/>', {
             class: "monthButton",
             onClick: "jumpMonth('" + heatmapNumber + "', '"+ i + "');",
-            text: i,
+            text: i
         }).appendTo(container + heatmapNumber);
     }
 }
