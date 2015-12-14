@@ -36,13 +36,6 @@
     background-color: #fff;
 }
 
-.cal-heatmap-container {
-    border-radius: 5px;
-    padding-left: 10px;
-    margin: auto;
-    background-color: #fff;
-}
-
 .standard-heatmap .cal-heatmap-container .graph-label
 {
     font-size: 15px;

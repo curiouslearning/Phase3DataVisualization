@@ -17,6 +17,8 @@ var getStandardHeatmap = function(selector, nextSelector, previousSelector, heat
             alert("The request could not be completed.")
         })
         .success(function( data ) {
+
+            console.log(data);
             // array of values from json data to use when setting legend
             var inputValues = getInputValues(data);
 
