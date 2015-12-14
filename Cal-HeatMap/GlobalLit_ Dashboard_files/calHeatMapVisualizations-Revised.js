@@ -18,7 +18,6 @@ var getStandardHeatmap = function(selector, nextSelector, previousSelector, heat
         })
         .success(function( data ) {
 
-            console.log(data);
             // array of values from json data to use when setting legend
             var inputValues = getInputValues(data);
 
@@ -152,7 +151,6 @@ $.get( "../../backend/deployments_for_user.php", payload)
         alert("Deployments for this user could not be loaded.")
     })
     .success(function( ids ) {
-        console.log('ids', ids, 'length', ids.length);
         var length = ids.length;
         var idS = "#standardHeatmap";
         var idC = "#continuousHeatmap";
@@ -275,7 +273,9 @@ function setLegend(input){
 
 
 // allow tooltips to overflow heatmap container to ensure readability
-$(window).load(function (){
+$(document).ready(function (){
+  //  var delay = 1000;
+    console.log("here");
     var tooltip = document.getElementsByClassName("ch-tooltip");
     var insert = document.getElementsByClassName("container-fluid");
     var parents = [];
@@ -287,6 +287,9 @@ $(window).load(function (){
         parents[i] = insert[i].parentNode;
         parents[i].insertBefore(divs[i], insert[i]);
         divs[i].appendChild(tooltip[i]);
+        if($(".tooltip_container").children().length > 0){
+            console.log('yes');
+        }
     }
 });
 
