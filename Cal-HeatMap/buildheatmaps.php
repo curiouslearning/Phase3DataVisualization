@@ -1,3 +1,7 @@
+<?php 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
 <!DOCTYPE html>
 <!-- saved from url=(0043)http://git.globallit.org/assessmentform.php -->
 <html style="min-height: 487px;">
@@ -161,7 +165,7 @@
         <!-- Nothing above this line should be modified.  It's generated at runtime. -->
 <?php
 include_once("../backend/deployments_for_user.php");
-
+error_reporting(E_ALL);
 $deployment_names = get_name_of_deployments_for_user_in_session();
 
 foreach ($deployment_names as $index => $name) {

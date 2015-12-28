@@ -11,7 +11,7 @@ include_once("jsonminify.php");
 include_once("backend_utils.php");
 
 // gzip output buffer
-ob_start('ob_gzhandler');
+//ob_start('ob_gzhandler');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -31,10 +31,10 @@ define('DATA_UNDER_DEPLOYMENT_PARAM', 'deployment_id');
 
 // how many days of data to return if no range is given
 define('DEFAULT_DATE_RANGE_IN_DAYS', '365');
-define('DEFAULT_DATE_RANGE_FIELD', 'created_on');
-define('JSON_DATE_KEY_FIELD', 'created_on');
+define('DEFAULT_DATE_RANGE_FIELD', 'start_date');
+define('JSON_DATE_KEY_FIELD', 'start_date');
 
-define('TEST_MODE', 'false');
+//define('TEST_MODE', 'false');
 
 
 $_GET = ['number_of_probes' => 'true', 'deployment_id' => 22];
@@ -54,7 +54,7 @@ function main($test_request) {
     if ($query == null) {
         die('could not form query from request');
     }
-
+echo($query);
     $result = get_result($query);
     if ($result == null) {
         die('query returned no data');
@@ -67,7 +67,6 @@ function main($test_request) {
         $ssepoch = convert_to_ssepoch($values[1]);
         $data[$ssepoch] = (int)$values[0];
     }
-
     if (TEST_MODE == 'true') {
         return $data;
     }

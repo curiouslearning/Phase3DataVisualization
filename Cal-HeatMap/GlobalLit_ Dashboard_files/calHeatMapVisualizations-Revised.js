@@ -11,7 +11,7 @@ var continuousHeatmaps = [];
 var getStandardHeatmap = function(selector, nextSelector, previousSelector, heatmapNumber, deployment_id)
 {
     var payload = {'number_of_files' : 'true', 'deployment_id' : deployment_id};
-    $.get("../../backend/visualization_endpoint.php", payload)
+    $.get("../backend/visualization_endpoint.php", payload)
         .error(function()
         {
             alert("The request could not be completed.")
@@ -81,7 +81,7 @@ var getStandardHeatmap = function(selector, nextSelector, previousSelector, heat
 var getContinuousHeatmap = function(selector, nextSelector, previousSelector, heatmapNumber, deployment_id)
 {
     var payload = {'number_of_probes' : 'true', 'deployment_id' : deployment_id};
-    $.get("../../backend/visualization_endpoint.php", payload)
+    $.get("../backend/visualization_endpoint.php", payload)
         .error(function()
         {
             alert("The request could not be completed.")
@@ -146,7 +146,7 @@ var getContinuousHeatmap = function(selector, nextSelector, previousSelector, he
 };
 
 var payload = {'deployment_ids' : 'true'};
-$.get( "../../backend/deployments_for_user.php", payload)
+$.get( "../backend/deployments_for_user.php", payload)
     .error(function() {
         alert("Deployments for this user could not be loaded.")
     })
@@ -286,7 +286,7 @@ $(document).ready(function (){
         divs[i].className = "tooltip_container";
         parents[i] = insert[i].parentNode;
         parents[i].insertBefore(divs[i], insert[i]);
-        divs[i].appendChild(tooltip[i]);
+//        divs[i].appendChild(tooltip[i]);
         if($(".tooltip_container").children().length > 0){
             console.log('yes');
         }

@@ -3,7 +3,9 @@ if(!isset($_SESSION))
 {
     session_start();
 }
-require_once("db.config.php");
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require_once("../../../../db.config");
 class Transporter {
     function checkLogin($username, $password)
     {

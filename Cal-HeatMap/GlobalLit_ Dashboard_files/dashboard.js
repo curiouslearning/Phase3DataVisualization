@@ -51,7 +51,7 @@ $(function() {
     //jvectormap data
 
     function getThumbnail(vUrl,callback) {
-        $.getJSON("https://developer.globallit.org/includes/getcountrydata.php", function(returndata){
+        $.getJSON("/includes/getcountrydata.php", function(returndata){
             callback(returndata);
         });
     };
